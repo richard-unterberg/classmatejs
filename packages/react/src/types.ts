@@ -93,6 +93,9 @@ export interface ExtendTemplateBuilder<
   logic<NextLogic extends object = object>(
     handler: LogicHandler<MergeProps<E, LogicProps & NextLogic>>,
   ): ExtendTemplateBuilder<E, I, LogicProps & NextLogic>
+  variants<ExtraProps extends object, VariantProps extends object = ExtraProps>(
+    config: VariantsConfig<VariantProps, ExtraProps>,
+  ): CmBaseComponent<MergeProps<E, ExtraProps & Partial<VariantProps>>>
 }
 
 /**

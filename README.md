@@ -1,6 +1,6 @@
-# 🪂 @classmatejs
+# 🪂 @classmate
 
-A javascript tool to separate class name logic, create variants and manage styles. For React and SolidJS.
+Styled components for class names. For React and SolidJS.
 
 ## 🚩 Transform this
 
@@ -37,11 +37,13 @@ const SomeButton = cm.button`
 `;
 ```
 
+*Very simplified examples, see [docs](https://react-classmate.dev) for much more features!*
+
 ## Features
 
 - Class name-focused components
 - CVA like **Variants**
-- Extend components
+- Extend components (template strings **or** `cm.extend(Component).variants`)
 - Dynamic styles
 - TypeScript support
 - Tested with SSR Frameworks
@@ -68,7 +70,6 @@ can use it to override classes.
 
 ## Upcoming
 
-- Variants for `cm.extend`
 - Advanced IDE integration
   - show generated default class on hover
   - enforce autocompletion and tooltips from the used libs

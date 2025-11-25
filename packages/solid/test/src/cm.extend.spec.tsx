@@ -127,4 +127,61 @@ describe("cm.extend (solid)", () => {
       "absolute top-0 animate-out fade-out bg-red/50 rounded-lg text-lg",
     )
   })
+
+  it("creates variant configs when extending components", () => {
+    interface ButtonProps {
+      $isLoading?: boolean
+    }
+
+    const BaseButton = cm.button<ButtonProps>`
+      font-semibold
+      ${(p) => (p.$isLoading ? "opacity-40" : "opacity-100")}
+    `
+
+    interface VariantExtras extends ButtonProps {
+      $tone?: "muted" | "loud"
+    }
+
+    type VariantConfigProps = VariantExtras & JSX.ButtonHTMLAttributes<HTMLButtonElement>
+
+    const ExtendedWithVariants = cm.extend(BaseButton).variants<VariantConfigProps, { $size: "sm" | "lg" }>({
+      base: ({ $tone, $isLoading }) => `
+        ${$tone === "muted" ? "text-slate-500" : "text-slate-900"}
+        ${$isLoading ? "pointer-events-none" : ""}
+      `,
+      variants: {
+        $size: {
+          sm: "text-sm px-2 py-1",
+          lg: ({ $isLoading }) => `text-lg px-4 py-2 ${$isLoading ? "cursor-wait" : ""}`,
+        },
+      },
+      defaultVariants: {
+        $size: "sm",
+      },
+    })
+
+    const initialRender = render(() => (
+      <ExtendedWithVariants type="button" $isLoading $tone="muted" $size="lg">
+        Save
+      </ExtendedWithVariants>
+    ))
+
+    expect(initialRender.container.firstChild).toHaveClass(
+      "font-semibold opacity-40 text-slate-500 pointer-events-none text-lg px-4 py-2 cursor-wait",
+    )
+    expect(initialRender.container.firstChild).toHaveAttribute("type", "button")
+    expect(initialRender.container.firstChild).not.toHaveAttribute("$size")
+
+    initialRender.unmount()
+
+    const secondRender = render(() => (
+      <ExtendedWithVariants type="button" $tone="loud">
+        Save
+      </ExtendedWithVariants>
+    ))
+
+    expect(secondRender.container.firstChild).toHaveClass(
+      "font-semibold opacity-100 text-slate-900 text-sm px-2 py-1",
+    )
+  })
 })

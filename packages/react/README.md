@@ -183,6 +183,46 @@ const Container = cm.extend(MyOtherComponent)`
 Additional Information:
 ["Extend" documentation](https://react-classmate.dev/docs/extend/)
 
+### Extend with variants
+
+You can also generate a brand-new variant map on top of an extended component. This is handy when the shared base styles live in template literals, but you still want a declarative API for the final consumer.
+
+```tsx
+interface ButtonProps {
+  $isLoading?: boolean
+}
+
+const BaseButton = cm.button<ButtonProps>`
+  font-semibold
+  rounded-md
+  ${(p) => (p.$isLoading ? "opacity-50" : "opacity-100")}
+`
+
+interface VariantExtras extends ButtonProps {
+  $tone?: "muted" | "loud"
+}
+
+type VariantConfigProps = VariantExtras & ButtonHTMLAttributes<HTMLButtonElement>
+
+const AccentButton = cm.extend(BaseButton).variants<VariantConfigProps, { $size: "sm" | "lg" }>({
+  base: ({ $tone, $isLoading }) => `
+    ${$tone === "muted" ? "text-slate-500" : "text-white"}
+    ${$isLoading ? "pointer-events-none" : ""}
+  `,
+  variants: {
+    $size: {
+      sm: "text-sm px-3 py-1.5",
+      lg: ({ $isLoading }) => `text-lg px-5 py-3 ${$isLoading ? "cursor-wait" : ""}`,
+    },
+  },
+  defaultVariants: {
+    $size: "sm",
+  },
+})
+```
+
+`AccentButton` keeps the logic/styles from `BaseButton`, filters variant props from the DOM, and offers a variants-only API to downstream components.
+
 ## Add CSS Styles
 
 You can use CSS styles in the template literal string with the `style` function.

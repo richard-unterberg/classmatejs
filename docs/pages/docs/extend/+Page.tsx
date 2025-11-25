@@ -14,6 +14,7 @@ import correctUse from "#docs/extend/code/correctUse.rcx"
 import extendBasic from "#docs/extend/code/extBasic.rcx"
 import extendLib from "#docs/extend/code/extendLib.rcx"
 import extendToReduce from "#docs/extend/code/extendToReduce.rcx"
+import extendVariants from "#docs/extend/code/extendVariants.rcx"
 import notUse from "#docs/extend/code/notUse.rcx"
 
 const BasicPage = () => {
@@ -41,6 +42,23 @@ const BasicPage = () => {
         </DocsNotebox>
         <SectionInnerHeadline>Implementation</SectionInnerHeadline>
         <HighlighterComponent input={basicImplementation} />
+      </Section>
+
+      <SectionHeadline>
+        Extend components <em>and</em> keep variant ergonomics
+      </SectionHeadline>
+      <Section>
+        <SectionInnerParagraph>
+          When the base styles live inside template literals but the final API should feel like a
+          <CodeElement>cm.variants</CodeElement> component, chain{" "}
+          <CodeElement>cm.extend().variants</CodeElement>. Classmate reuses the original logic handlers, base
+          styles, and merges the variant map on top.
+        </SectionInnerParagraph>
+        <HighlighterComponent input={extendVariants} />
+        <SectionInnerParagraph>
+          Variant props are filtered from the DOM automatically, default variants keep working, and you can
+          mix template literals + variant maps across as many extension layers as you need.
+        </SectionInnerParagraph>
       </Section>
 
       <SectionHeadline>

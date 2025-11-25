@@ -1,7 +1,9 @@
 import { DocsHead } from "#components/DocsHead"
 import HighlighterComponent from "#components/HighlighterComponent"
 import CodeElement from "#components/common/CodeElement"
-import { Section, SectionHeadline, SectionInnerHeadline } from "#docs/elements"
+import LinkComponent from "#components/common/LinkComponent"
+import { Section, SectionHeadline, SectionInnerHeadline, SectionInnerParagraph } from "#docs/elements"
+import { internalLink } from "#lib/links"
 
 import basic from "#docs/variants/code/basic.rcx"
 import basicImplementation from "#docs/variants/code/basicImplementation.rcx"
@@ -36,6 +38,16 @@ const DocsStartPage = () => {
         </ul>
         <SectionInnerHeadline>Implementation</SectionInnerHeadline>
         <HighlighterComponent input={basicImplementation} />
+        <SectionInnerParagraph>
+          Need to reuse a component but still expose a variant API? Chain{" "}
+          <CodeElement>cm.extend().variants</CodeElement>
+          so the base template literal styles stay intact while consumers get declarative variant props. Learn
+          more on the
+          <LinkComponent href={internalLink.docs.extend} className="ml-1">
+            extend page
+          </LinkComponent>
+          .
+        </SectionInnerParagraph>
       </Section>
     </>
   )

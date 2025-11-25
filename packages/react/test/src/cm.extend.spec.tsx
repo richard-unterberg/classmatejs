@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom"
 import { render } from "@testing-library/react"
-import React, { type InputHTMLAttributes } from "react"
+import React, { type ButtonHTMLAttributes, type InputHTMLAttributes } from "react"
 
 import cm from "../../dist"
 
@@ -127,5 +127,58 @@ describe("cm.extends", () => {
     expect(activeElement.firstChild).toHaveClass(
       "absolute top-0 animate-out fade-out bg-red/50 rounded-lg text-lg",
     )
+  })
+
+  it("creates variant configs when extending components", () => {
+    interface ButtonProps {
+      $isLoading?: boolean
+    }
+
+    const BaseButton = cm.button<ButtonProps>`
+      font-semibold
+      ${(p) => (p.$isLoading ? "opacity-40" : "opacity-100")}
+    `
+
+    interface VariantExtras extends ButtonProps {
+      $tone?: "muted" | "loud"
+    }
+
+    type VariantConfigProps = VariantExtras & ButtonHTMLAttributes<HTMLButtonElement>
+
+    const ExtendedWithVariants = cm.extend(BaseButton).variants<VariantConfigProps, { $size: "sm" | "lg" }>({
+      base: ({ $tone, $isLoading }) => `
+        ${$tone === "muted" ? "text-slate-500" : "text-slate-900"}
+        ${$isLoading ? "pointer-events-none" : ""}
+      `,
+      variants: {
+        $size: {
+          sm: "text-sm px-2 py-1",
+          lg: ({ $isLoading }) => `text-lg px-4 py-2 ${$isLoading ? "cursor-wait" : ""}`,
+        },
+      },
+      defaultVariants: {
+        $size: "sm",
+      },
+    })
+
+    const { rerender, container } = render(
+      <ExtendedWithVariants type="button" $isLoading $tone="muted" $size="lg">
+        Save
+      </ExtendedWithVariants>,
+    )
+
+    expect(container.firstChild).toHaveClass(
+      "font-semibold opacity-40 text-slate-500 pointer-events-none text-lg px-4 py-2 cursor-wait",
+    )
+    expect(container.firstChild).toHaveAttribute("type", "button")
+    expect(container.firstChild).not.toHaveAttribute("$size")
+
+    rerender(
+      <ExtendedWithVariants type="button" $tone="loud">
+        Save
+      </ExtendedWithVariants>,
+    )
+
+    expect(container.firstChild).toHaveClass("font-semibold opacity-100 text-slate-900 text-sm px-2 py-1")
   })
 })

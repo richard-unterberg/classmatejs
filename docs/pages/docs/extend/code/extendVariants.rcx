@@ -1,0 +1,32 @@
+import type { ButtonHTMLAttributes } from "react"
+
+interface ButtonProps {
+  $isLoading?: boolean
+}
+
+const BaseButton = cm.button<ButtonProps>`
+  font-semibold
+  ${(p) => (p.$isLoading ? "opacity-40" : "opacity-100")}
+`
+
+interface AccentExtras extends ButtonProps {
+  $tone?: "muted" | "loud"
+}
+
+type AccentProps = AccentExtras & ButtonHTMLAttributes<HTMLButtonElement>
+
+export const AccentButton = cm.extend(BaseButton).variants<AccentProps, { $size: "sm" | "lg" }>({
+  base: ({ $tone, $isLoading }) => `
+    ${$tone === "muted" ? "text-slate-500" : "text-white"}
+    ${$isLoading ? "pointer-events-none" : ""}
+  `,
+  variants: {
+    $size: {
+      sm: "text-sm px-3 py-1.5",
+      lg: ({ $isLoading }) => `text-lg px-5 py-3 ${$isLoading ? "cursor-wait" : ""}`,
+    },
+  },
+  defaultVariants: {
+    $size: "sm",
+  },
+})

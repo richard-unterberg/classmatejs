@@ -1,6 +1,7 @@
 import {
   createBaseComponent,
   createExtendedComponent,
+  createExtendedVariantsComponent,
   createVariantsComponent,
   domElements,
 } from "@classmatejs/core"
@@ -34,10 +35,19 @@ const createExtendBuilder = (
 
   const builderWithLogic = builder as typeof builder & {
     logic: (handler: LogicHandler<any>) => ReturnType<typeof createExtendBuilder>
+    variants: (config: VariantsConfig<any, any>) => CmBaseComponent<any>
   }
 
   builderWithLogic.logic = (handler: LogicHandler<any>) =>
     createExtendBuilder(baseComponent, [...logicHandlers, handler])
+
+  builderWithLogic.variants = (config: VariantsConfig<any, any>) =>
+    createExtendedVariantsComponent<keyof JSX.IntrinsicElements | InputComponent, any, any, any>(
+      baseComponent,
+      config,
+      createReactElement,
+      logicHandlers as LogicHandler<any>[],
+    ) as CmBaseComponent<any>
 
   return builderWithLogic
 }
