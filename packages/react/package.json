@@ -46,17 +46,13 @@
   },
   "homepage": "https://github.com/richard-unterberg/classmate/#readme",
   "scripts": {
-    "========= Package Actions": "",
-    "clean": "rm -rf dist",
-    "clean:all": "rm -rf dist && rm -rf node_modules",
     "========= Test": "",
     "test-clear": "jest --clearCache",
     "test:all": "npm run test-clear && npm run test:src",
     "test:src": "npm run build:base && jest --config jest.config.cjs --testPathPattern=test/src",
     "check:all": "tsc --noEmit",
     "========= Build": "",
-    "prebuild:base": "npm run build -w @classmatejs/core",
-    "build:base": "npm run clean && tsup",
+    "build:base": "tsup",
     "build": "npm run build:base",
     "package": "npm run build && npm publish --access public"
   },

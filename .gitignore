@@ -13,3 +13,4 @@ docs/dist
 *.code-workspace
 
 test-results
+old-solidjs

@@ -1,22 +1,33 @@
 # @classmatejs/solid
 
-Experimental Solid adapter for the Classmate runtime. The package mirrors the React API but binds the factories to Solid's JSX primitives.
+Solid-first bindings for the Classmate runtime. The adapter exposes the exact same API as `@classmatejs/react`
+(`cm`, `.variants`, `.extend`, helpers), but renders through Solid components.
 
-> Status: prototype. The package is not published yet and exists as a scaffold for future work.
+> Status: in-progress. The package is private until the Solid adapter reaches feature parity with the React release.
 
-## Goals
+## Installation
 
-- Provide a Solid-first API equivalent to `@classmatejs/react`
-- Share as much logic as possible with `@classmatejs/core`
-- Offer drop-in helpers for Solid projects (`cm.button`, variants, class merging)
+```bash
+npm install @classmatejs/solid
+```
 
-## Working locally
+`solid-js` is a peer dependency so bring your own Solid version (>= 1.8).
 
-While the adapter is under construction you can iterate via the workspace scripts:
+## Usage
+
+See the [react-adapter README](../react/README.md) for classmate usage.
+
+### Helpers
+
+- `createClassmate(factory)` – evaluate a `cm` factory inside a Solid component without re-creating it per run.
+- `convertCmProps(obj, { size: "$size" })` – map host props to `$` props.
+- `createVariantMap({ elements: ["h1", "h2"], variantsConfig })` – bulk-generate variant driven components.
+- `cmMerge` – the exported `tailwind-merge` instance for ad-hoc class merging.
+
+## Local development
 
 ```bash
 npm run build -w @classmatejs/solid
-npm run lint -w @classmatejs/solid
 ```
 
-Integration tests will live alongside Solid example apps once the adapter stabilizes.
+Tests will land once the adapter stabilizes; for now the build ensures the factories stay type-safe.

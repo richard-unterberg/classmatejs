@@ -1,19 +1,63 @@
 {
   "name": "@classmatejs/solid",
-  "version": "0.0.0",
+  "description": "Solid adapter for Classmate component factories.",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "main": "./dist/index.cjs.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "keywords": [
+    "solid",
+    "solidjs",
+    "classmate",
+    "typescript",
+    "dynamic-classnames",
+    "dynamic-styles",
+    "dynamic-variants",
+    "css",
+    "css-in-js",
+    "utility-first",
+    "utility-first-classnames",
+    "classname",
+    "classname-variants",
+    "frontend",
+    "ssr",
+    "tailwind",
+    "unocss",
+    "tailwind-merge"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs.js",
+      "import": "./dist/index.js"
+    }
+  },
   "scripts": {
-    "build": "echo \"TODO: build solid\"",
-    "test": "echo \"TODO: test solid\"",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "build": "tsup",
+    "test": "npm run build && vitest run --config vitest.config.ts",
+    "test:watch": "vitest --config vitest.config.ts",
+    "========= Build": "",
+    "package": "npm run build && npm publish --access public"
   },
   "peerDependencies": {
     "solid-js": ">=1.8.0"
+  },
+  "dependencies": {
+    "tailwind-merge": "^3.3.0"
+  },
+  "devDependencies": {
+    "@solidjs/testing-library": "^0.8.10",
+    "@testing-library/jest-dom": "^6.6.3",
+    "solid-js": "^1.9.10",
+    "tsup": "^8.3.0",
+    "typescript": "^5.7.2",
+    "vite-plugin-solid": "^2.10.2",
+    "vitest": "^4.0.13"
   }
 }
