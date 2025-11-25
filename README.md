@@ -1,6 +1,6 @@
-# classmatejs monorepo
+# 🪂 @classmatejs
 
-A collection of packages for building composable class name utilities across frameworks. This repo hosts the React adapter, future framework ports, and the public documentation site.
+A javascript tool to separate class name logic, create variants and manage styles. For React and SolidJS.
 
 ## 🚩 Transform this
 
@@ -46,15 +46,16 @@ const SomeButton = cm.button`
 - TypeScript support
 - Tested with SSR Frameworks
 - Classname merging
-- (SolidJS)[https://www.solidjs.com/] or (React)[https://reactjs.org/] adapters
+- [SolidJS](https://www.solidjs.com/) / [React](https://reactjs.org/) adapters
 
 ## Packages and Documentations:
+
+The monorepo contains the following packages:
 
 - [`@classmatejs/react`](packages/react/README.md) — published React adapter ([docs](https://react-classmate.dev/docs/get-started/))
 - [`@classmatejs/core`](packages/core/README.md) — shared runtime planned for future adapters (currently internal-only)
 - [`@classmatejs/solid`](packages/solid/README.md) — experimental Solid adapter scaffold
 - [`docs`](docs/README.md) — Vite/Vike site that powers [react-classmate.dev](https://react-classmate.dev)
-
 
 ## Tailwind Merge
 
@@ -64,14 +65,11 @@ can use it to override classes.
 
 ## Upcoming
 
-- solidjs port: `@classmatejs/solid`
-- `cm.raw()` and `cm.raw.variants()` for only using `cm` syntax for classnames
-  (output as string)
 - Variants for `cm.extend`
-- Integrate more tests, benchmarks focused on SSR, SSG, react and solid
 - Advanced IDE integration
   - show generated default class on hover
   - enforce autocompletion and tooltips from the used libs
+- Integrate more tests, benchmarks focused on SSR, SSG, react and solid
 
 ## Inspiration
 
