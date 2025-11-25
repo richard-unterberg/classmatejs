@@ -50,11 +50,14 @@ const SomeButton = cm.button`
 
 ## Packages and Documentations:
 
-The monorepo contains the following packages:
+Public Packages:
 
-- [`@classmatejs/react`](packages/react/README.md) — published React adapter ([docs](https://react-classmate.dev/docs/get-started/))
-- [`@classmatejs/core`](packages/core/README.md) — shared runtime planned for future adapters (currently internal-only)
-- [`@classmatejs/solid`](packages/solid/README.md) — experimental Solid adapter scaffold
+- [`@classmatejs/react`](packages/react/README.md) — React adapter
+- [`@classmatejs/solid`](packages/solid/README.md) — SolidJs adapter
+
+Internal:
+
+- [`@classmatejs/core`](packages/core/README.md) — shared runtime
 - [`docs`](docs/README.md) — Vite/Vike site that powers [react-classmate.dev](https://react-classmate.dev)
 
 ## Tailwind Merge
