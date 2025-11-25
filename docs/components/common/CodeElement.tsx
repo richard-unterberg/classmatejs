@@ -1,4 +1,4 @@
-import cm from "@classmate/react"
+import cm from "@classmatejs/react"
 
 interface CodeProps {
   $size?: "sm" | "md" | "lg" | "xl" | "2xl"

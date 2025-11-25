@@ -1,4 +1,4 @@
-import cm from "@classmate/react"
+import cm from "@classmatejs/react"
 
 import { DocsHead } from "#components/DocsHead"
 import DocsNotebox from "#components/DocsNotebox"
@@ -50,7 +50,7 @@ const ButtonPage = () => (
         properly maintain it through the variability of project requirements and the resulting "horizontal
         styling." My wish was to read those heavily styled components like a book, with all the information I
         need to know about its design and behavior. This is why I created{" "}
-        <LinkComponent href={internalLink.start}>@classmate/react</LinkComponent>.
+        <LinkComponent href={internalLink.start}>@classmatejs/react</LinkComponent>.
       </SectionInnerParagraph>
       <SectionInnerParagraph>
         The main idea of this project is to engage myself in properly designing and managing class names and

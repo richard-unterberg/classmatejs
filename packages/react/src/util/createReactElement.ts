@@ -1,7 +1,7 @@
 import { type JSX, type JSXElementConstructor, type RefAttributes, createElement, forwardRef } from "react"
 import { twMerge } from "tailwind-merge"
 
-import { applyLogicHandlers } from "@classmate/core"
+import { applyLogicHandlers } from "@classmatejs/core"
 
 import type { CmBaseComponent, LogicHandler, StyleDefinition } from "../types"
 

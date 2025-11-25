@@ -1,4 +1,4 @@
-import cm from "@classmate/react"
+import cm from "@classmatejs/react"
 
 const Excerpt = cm.p<{ $centered?: boolean }>`
   text-lg 

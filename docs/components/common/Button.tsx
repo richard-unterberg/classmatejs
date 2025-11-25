@@ -1,4 +1,4 @@
-import { type VariantsConfig, convertCmProps, createVariantMap } from "@classmate/react"
+import { type VariantsConfig, convertCmProps, createVariantMap } from "@classmatejs/react"
 import { LoaderCircle } from "lucide-react"
 import type { HTMLAttributes, ReactNode } from "react"
 

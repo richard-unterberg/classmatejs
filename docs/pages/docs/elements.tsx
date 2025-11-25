@@ -1,4 +1,4 @@
-import cm from "@classmate/react"
+import cm from "@classmatejs/react"
 import type { HTMLAttributes } from "react"
 
 import { H3Headline, H4Headline } from "#components/common/Headline"

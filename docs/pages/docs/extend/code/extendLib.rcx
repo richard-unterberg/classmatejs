@@ -1,5 +1,5 @@
 import { ArrowBigDown } from "lucide-react"
-import cm from "@classmate/react"
+import cm from "@classmatejs/react"
 
 const StyledLucideArrow = cm.extend(ArrowBigDown)`
   md:-right-4.5

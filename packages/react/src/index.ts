@@ -1,4 +1,4 @@
-import { domElements } from "@classmate/core"
+import { domElements } from "@classmatejs/core"
 import { twMerge } from "tailwind-merge"
 
 import cmInit from "./cm"
@@ -68,6 +68,6 @@ export { domElements }
 
 export default cm
 
-/** the `twMerge` lib from @classmate/react */
+/** the `twMerge` lib from @classmatejs/react */
 const cmMerge = twMerge
 export { cmMerge }

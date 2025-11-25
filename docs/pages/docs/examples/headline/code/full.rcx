@@ -1,5 +1,5 @@
 import type { HTMLAttributes } from "react"
-import { type CmBaseComponent, type VariantsConfig, createVariantMap } from "@classmate/react"
+import { type CmBaseComponent, type VariantsConfig, createVariantMap } from "@classmatejs/react"
 
 // 1. Setup Accepted Elements and Types
 

@@ -1,4 +1,4 @@
-import cm from "@classmate/react"
+import cm from "@classmatejs/react"
 import { Monitor, Moon, Sun } from "lucide-react" // Added Monitor icon for "auto mode"
 
 import Button from "#components/common/Button"

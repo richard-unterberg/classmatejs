@@ -1,4 +1,4 @@
-import cm from "@classmate/react"
+import cm from "@classmatejs/react"
 import { CircleHelp, type LucideIcon } from "lucide-react"
 import type { HTMLAttributes } from "react"
 import Notebox, { type NoteboxType } from "#components/common/Notebox"

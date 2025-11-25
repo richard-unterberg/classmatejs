@@ -28,6 +28,6 @@ export const internalLink = {
 }
 
 export const externalLink = {
-  npm: "https://www.npmjs.com/package/@classmate/react",
+  npm: "https://www.npmjs.com/package/@classmatejs/react",
   github: "https://github.com/unterberg-dev/react-classmate",
 }

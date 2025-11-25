@@ -1,4 +1,4 @@
-import cm from "@classmate/react"
+import cm from "@classmatejs/react"
 import { Blocks, BrickWall, Sparkles, SwatchBook } from "lucide-react"
 
 import { DocsHead } from "#components/DocsHead"

@@ -1,4 +1,4 @@
-import cm from "@classmate/react"
+import cm from "@classmatejs/react"
 
 const Skeleton = cm.div`
   bg-graySuperLight

@@ -1,4 +1,4 @@
-import cm from "@classmate/react"
+import cm from "@classmatejs/react"
 
 export type NoteboxType = "info" | "warning" | "error" | "success" | "aside"
 

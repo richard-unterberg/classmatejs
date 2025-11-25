@@ -1,4 +1,4 @@
-import cm from "@classmate/react"
+import cm from "@classmatejs/react"
 import type { AnchorHTMLAttributes } from "react"
 import { usePageContext } from "vike-react/usePageContext"
 

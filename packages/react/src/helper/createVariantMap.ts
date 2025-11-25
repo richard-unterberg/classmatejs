@@ -1,4 +1,4 @@
-import { createVariantMap as createCoreVariantMap } from "@classmate/core"
+import { createVariantMap as createCoreVariantMap } from "@classmatejs/core"
 
 import cm from "../cm"
 import type { CmBaseComponent, CmIntrinsicElement, VariantsConfig } from "../types"

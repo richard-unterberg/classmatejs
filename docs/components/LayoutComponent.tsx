@@ -1,4 +1,4 @@
-import cm from "@classmate/react"
+import cm from "@classmatejs/react"
 
 interface LayoutComponentProps {
   type?: "full" | "normal" | "small" | "normalWithoutGutter" | "tiny"

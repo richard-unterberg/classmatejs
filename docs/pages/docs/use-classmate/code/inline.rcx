@@ -1,4 +1,4 @@
-import cm, { useClassmate } from "@classmate/react"
+import cm, { useClassmate } from "@classmatejs/react"
 
 type DayStatus = "completed" | "pending"
 

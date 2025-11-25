@@ -1,4 +1,4 @@
-import cm from "@classmate/react"
+import cm from "@classmatejs/react"
 import Notebox from "#components/common/Notebox"
 
 const Card = cm.extend(Notebox)`

@@ -1,4 +1,4 @@
-import cm from "@classmate/react"
+import cm from "@classmatejs/react"
 import { Github, Sparkles, Sticker } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 
@@ -85,7 +85,7 @@ const Header = () => {
       <HeaderLayout>
         <LogoContainer href={internalLink.start}>
           <Sticker className="text-dark h-4 w-4 lg:h-5 lg:w-5" />
-          <span className="font-bold text-base lg:text-lg">@classmate/react</span>
+          <span className="font-bold text-base lg:text-lg">@classmatejs/react</span>
         </LogoContainer>
         <div className="flex gap-2">
           {isStartPage && (

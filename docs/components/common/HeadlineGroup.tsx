@@ -1,4 +1,4 @@
-import cm from "@classmate/react"
+import cm from "@classmatejs/react"
 import Headline from "#components/common/Headline"
 
 export type HeadlineGroupHeadlineStyle = {

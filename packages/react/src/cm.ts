@@ -3,7 +3,7 @@ import {
   createExtendedComponent,
   createVariantsComponent,
   domElements,
-} from "@classmate/core"
+} from "@classmatejs/core"
 import type { JSX } from "react"
 
 import type {

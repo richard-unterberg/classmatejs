@@ -2,8 +2,8 @@
 
 ## Objectives
 - Decouple the generic class-building runtime from React so adapters for Solid, Vue, etc. only need to implement view-library specifics.
-- Centralize shared factories (`base`, `extend`, `variants`), helpers (`createVariantMap`, `applyLogicHandlers`), and metadata (`domElements`) inside `@classmate/core`.
-- Preserve the existing public surface (`import cm from "@classmate/react"`) by keeping the adapter packages as the only published entry-points.
+- Centralize shared factories (`base`, `extend`, `variants`), helpers (`createVariantMap`, `applyLogicHandlers`), and metadata (`domElements`) inside `@classmatejs/core`.
+- Preserve the existing public surface (`import cm from "@classmatejs/react"`) by keeping the adapter packages as the only published entry-points.
 - Keep extensibility at the center: the core should be framework-agnostic, composable, and ready for future adapters without code duplication.
 
 ## Current Snapshot
@@ -16,8 +16,8 @@
 
 | Layer | Responsibility | Notes |
 | --- | --- | --- |
-| `@classmate/core` (private) | Owns runtime abstractions: interpolation handling, logic handlers, DOM registry, variant utilities, type helpers, adapter interfaces. | No direct dependency on React/Solid. Ships JS + .d.ts that adapters consume. |
-| Adapter packages (`@classmate/react`, `@classmate/solid`, …) | Implement `ClassmateAdapter` interface (how to create components, merge class names/styles, normalize props). Re-export a bound `cm` factory configured with their adapter. | Users install only one adapter package. |
+| `@classmatejs/core` (private) | Owns runtime abstractions: interpolation handling, logic handlers, DOM registry, variant utilities, type helpers, adapter interfaces. | No direct dependency on React/Solid. Ships JS + .d.ts that adapters consume. |
+| Adapter packages (`@classmatejs/react`, `@classmatejs/solid`, …) | Implement `ClassmateAdapter` interface (how to create components, merge class names/styles, normalize props). Re-export a bound `cm` factory configured with their adapter. | Users install only one adapter package. |
 | Docs/demo packages | Consume adapter packages just like end-users. | Acts as integration tests. |
 
 Core never ships directly to users; adapters remain the user-facing packages.
@@ -50,7 +50,7 @@ Core never ships directly to users; adapters remain the user-facing packages.
 
 ### 5. Build & Distribution
 - Configure `packages/core/tsconfig.json`, `tsup` (or `tsc`) build script to emit ESM + types consumed by adapters.
-- Mark the package as `"private": true` but still build it via workspaces so adapters import compiled output (`@classmate/core/dist` or source via TS path mapping).
+- Mark the package as `"private": true` but still build it via workspaces so adapters import compiled output (`@classmatejs/core/dist` or source via TS path mapping).
 
 ## Adapter Responsibilities After Extraction
 - Supply adapter-level options (React uses `forwardRef`, Solid uses `splitProps`, etc.).
@@ -61,7 +61,7 @@ Core never ships directly to users; adapters remain the user-facing packages.
 ## Migration Plan
 
 ### Phase 0 – Preparation
-1. Align TS project references so adapters can import from `@classmate/core/dist`.
+1. Align TS project references so adapters can import from `@classmatejs/core/dist`.
 2. Ensure lint/build scripts run per package (update root `package.json` if needed).
 3. Add baseline tests (smoke tests for `cm.div` + `variants`) to lock behavior pre-refactor.
 
@@ -72,7 +72,7 @@ Core never ships directly to users; adapters remain the user-facing packages.
 
 ### Phase 2 – Move Metadata & Pure Utilities
 1. Move `packages/react/src/util/domElements.ts` → `packages/core/src/dom/elements.ts`; export `domElements` & `AllowedTags`.
-2. Move `applyLogicHandlers` and `createVariantMap` into core (rename to `logic/applyHandlers.ts` & `helpers/createVariantMap.ts`). Update React imports to consume them from `@classmate/core`.
+2. Move `applyLogicHandlers` and `createVariantMap` into core (rename to `logic/applyHandlers.ts` & `helpers/createVariantMap.ts`). Update React imports to consume them from `@classmatejs/core`.
 3. Ensure moved files use generic types from `core/types` (not React types).
 
 ### Phase 3 – Extract Factory Logic

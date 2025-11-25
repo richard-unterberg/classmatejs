@@ -4,7 +4,7 @@ import type {
   LogicHandler,
   RuntimeComponent,
   VariantsConfig,
-} from "@classmate/core"
+} from "@classmatejs/core"
 import type {
   ForwardRefExoticComponent,
   JSX,
@@ -19,7 +19,7 @@ export type {
   LogicHandler,
   VariantsConfig,
   StyleDefinition,
-} from "@classmate/core"
+} from "@classmatejs/core"
 
 export type CmIntrinsicElement = Extract<AllowedTags, keyof JSX.IntrinsicElements>
 

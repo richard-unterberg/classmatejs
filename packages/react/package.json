@@ -1,5 +1,5 @@
 {
-  "name": "@classmate/react",
+  "name": "@classmatejs/react",
   "description": "A react tool to separate class name logic, create variants and manage styles.",
   "version": "0.0.1",
   "keywords": [
@@ -27,6 +27,7 @@
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "publishConfig": {"access": "public"},
   "files": [
     "dist"
   ],
@@ -54,10 +55,10 @@
     "test:src": "npm run build:base && jest --config jest.config.cjs --testPathPattern=test/src",
     "check:all": "tsc --noEmit",
     "========= Build": "",
-    "prebuild:base": "npm run build -w @classmate/core",
+    "prebuild:base": "npm run build -w @classmatejs/core",
     "build:base": "npm run clean && tsup",
     "build": "npm run build:base",
-    "package": "npm run build && npm publish"
+    "package": "npm run build && npm publish --access public"
   },
   "peerDependencies": {
     "react": ">=16.8.0"

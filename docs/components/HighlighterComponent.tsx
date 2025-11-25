@@ -1,4 +1,4 @@
-import cm from "@classmate/react"
+import cm from "@classmatejs/react"
 import { Copy } from "lucide-react"
 import { useCallback } from "react"
 import { clientOnly } from "vike-react/clientOnly"

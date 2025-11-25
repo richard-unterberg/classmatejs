@@ -1,4 +1,4 @@
-import cm from "@classmate/react"
+import cm from "@classmatejs/react"
 import type { ReactNode } from "react"
 
 import { APP_CONFIG } from "#lib/config"

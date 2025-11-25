@@ -1,4 +1,4 @@
-import cm from "@classmate/react"
+import cm from "@classmatejs/react"
 import type { AnchorHTMLAttributes, ReactNode } from "react"
 import { H4Headline } from "#components/common/Headline"
 import LinkComponent from "#components/common/LinkComponent"
