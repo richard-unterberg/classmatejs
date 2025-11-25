@@ -1,16 +1,17 @@
 # classmatejs monorepo
 
-[![npm](https://img.shields.io/npm/v/%40classmatejs%2Freact)](https://www.npmjs.com/package/@classmatejs/react)
-[![npm bundle size](https://img.shields.io/bundlephobia/min/%40classmatejs%2Freact)](https://bundlephobia.com/result?p=%40classmatejs%2Freact)
-
 A collection of packages for building composable class name utilities across frameworks. This repo hosts the React adapter, future framework ports, and the public documentation site.
 
-## Packages
+## Packages and Documentations:
 
 - [`@classmatejs/react`](packages/react/README.md) — published React adapter ([docs](https://react-classmate.dev/docs/get-started/))
 - [`@classmatejs/core`](packages/core/README.md) — shared runtime planned for future adapters (currently internal-only)
 - [`@classmatejs/solid`](packages/solid/README.md) — experimental Solid adapter scaffold
 - [`docs`](docs/README.md) — Vite/Vike site that powers [react-classmate.dev](https://react-classmate.dev)
+
+## Contributing
+
+Issues and pull requests are welcome. Please open an issue describing any bugs or feature ideas, and run `npm run lint` and `npm run test` before submitting changes.
 
 ## Getting started
 
@@ -45,6 +46,3 @@ npm install
 npm run dev
 ```
 
-## Contributing
-
-Issues and pull requests are welcome. Please open an issue describing any bugs or feature ideas, and run `npm run lint` and `npm run test` before submitting changes.
