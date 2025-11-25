@@ -1,0 +1,38 @@
+import "@testing-library/jest-dom"
+import { render } from "@testing-library/react"
+
+const cm: typeof import("../../dist").default = require("../../dist/index.cjs.js")
+
+describe("CommonJS Build", () => {
+  it("should import the library using require", () => {
+    const RenderDiv = cm.div`bg-red p-4`
+
+    const { container } = render(<RenderDiv />)
+    expect(container.firstChild).toHaveClass("bg-red p-4")
+    expect(container.firstChild).toBeInstanceOf(HTMLDivElement)
+  })
+})
+
+describe("cm base test", () => {
+  it("extends the base component with new props", () => {
+    const StyledSliderItemBase = cm.button`
+      absolute
+      top-0
+      ${(p: { $isActive: boolean }) => (p.$isActive ? "animate-in fade-in" : "animate-out fade-out")}
+    `
+
+    const NewStyledSliderItemWithNewProps = cm.extend(StyledSliderItemBase)<{ $secondBool: boolean }>`
+      rounded-lg
+      text-lg
+      ${(p) => (p.$isActive ? "bg-blue" : "bg-red")}
+      ${(p) => (p.$secondBool ? "text-underline" : "some-class-here")}
+    `
+
+    const { container } = render(<NewStyledSliderItemWithNewProps $isActive={false} $secondBool />)
+    expect(container.firstChild).toHaveClass(
+      "absolute top-0 animate-out fade-out rounded-lg text-lg bg-red text-underline",
+    )
+    expect(container.firstChild).not.toHaveAttribute("$isActive")
+    expect(container.firstChild).toBeInstanceOf(HTMLButtonElement)
+  })
+})
