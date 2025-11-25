@@ -1,5 +1,0 @@
-export const CustomButton = cm.button`
-  text-blue
-  px-3
-  py-2
-`

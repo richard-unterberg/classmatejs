@@ -15,8 +15,8 @@ yarn add @classmatejs/react
 
 ## Documentation
 
-- [Full guide](https://react-classmate.dev/)
-- [Getting started](https://react-classmate.dev/docs/get-started/)
+- [Full guide](./README.md#contents)
+- [Getting started](./README.md#getting-started)
 
 ## Contents
 
@@ -57,7 +57,7 @@ const Container = cm.div`
 ```
 
 Additional Information:
-[See "Base usage" documentation](https://react-classmate.dev/docs/basic/)
+[See "Basic usage" documentation](./README.md#basic-usage)
 
 ### Use with props
 
@@ -128,7 +128,7 @@ export default () => <Alert $severity="info" $isActive />;
 ```
 
 Additional Information:
-[See "Variants" documentation](https://react-classmate.dev/docs/variants/)
+[See "Variants" documentation](./README.md#create-variants)
 
 ### Typescript: Separate base props and variants with a second type parameter
 
@@ -181,7 +181,7 @@ const Container = cm.extend(MyOtherComponent)`
 ```
 
 Additional Information:
-["Extend" documentation](https://react-classmate.dev/docs/extend/)
+["Extend" documentation](./README.md#extend)
 
 ### Extend with variants
 

@@ -4,17 +4,16 @@
   "version": "0.0.1",
   "type": "module",
   "workspaces": [
-    "packages/*",
-    "docs"
+    "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev -w docs",
     "build": "npm run build -ws --if-present",
-    "test": "npm run test:src -w @classmatejs/react && npm run test -w @classmatejs/solid",
+    "test": "npm run build && npm run test:src -w @classmatejs/react && npm run test -w @classmatejs/solid && npm run test -w @classmatejs/factory",
     "lint": "npm run lint -ws --if-present",
     "clean": "npm run clean -ws --if-present",
     "publish:classmate": "npm run package -w @classmatejs/react",
     "publish:solid": "npm run package -w @classmatejs/solid",
+    "publish:factory": "npm run package -w @classmatejs/factory",
     "docs": "npm run dev -w docs",
     "docs:build": "npm run build -w docs",
     "docs:preview": "npm run preview -w docs"

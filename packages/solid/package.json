@@ -39,7 +39,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "tsup",
-    "test": "npm run build && vitest run --config vitest.config.ts",
+    "test": "vitest run --config vitest.config.ts",
     "test:watch": "vitest --config vitest.config.ts",
     "========= Build": "",
     "package": "npm run build && npm publish --access public"

@@ -1,6 +1,6 @@
-# 🪂 @classmate
+# @classmatejs
 
-Styled components for class names. For React and SolidJS.
+Styled components for class names. For React and SolidJS or even framework agnostic.
 
 ## 🚩 Transform this
 
@@ -37,7 +37,7 @@ const SomeButton = cm.button`
 `;
 ```
 
-*Very simplified examples, see [docs](https://react-classmate.dev) for much more features!*
+*Very simplified examples—see the [@classmatejs/react README](packages/react/README.md) for many more features!*
 
 ## Features
 
@@ -56,11 +56,7 @@ Public Packages:
 
 - [`@classmatejs/react`](packages/react/README.md) — React adapter
 - [`@classmatejs/solid`](packages/solid/README.md) — SolidJs adapter
-
-Internal:
-
-- [`@classmatejs/core`](packages/core/README.md) — shared runtime
-- [`docs`](docs/README.md) — Vite/Vike site that powers [react-classmate.dev](https://react-classmate.dev)
+- [`@classmatejs/factory`](packages/factory/README.md) — Framework agnostic factory
 
 ## Tailwind Merge
 
