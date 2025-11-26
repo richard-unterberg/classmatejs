@@ -1,24 +1,34 @@
 import type { VariantsConfig } from "../types"
 
-interface VariantFactory<Component> {
-  variants: (config: VariantsConfig<any, any>) => Component
+interface VariantFactory<Component, ExtraProps extends object, VariantProps extends object> {
+  variants: (config: VariantsConfig<VariantProps, ExtraProps>) => Component
 }
 
-export interface CreateVariantMapOptions<T extends string, Component> {
+export interface CreateVariantMapOptions<
+  T extends string,
+  Component,
+  ExtraProps extends object,
+  VariantProps extends object,
+> {
   elements: readonly T[]
-  variantsConfig: VariantsConfig<any, any>
-  resolveFactory: (tag: T) => VariantFactory<Component> | undefined
-  fallbackFactory?: VariantFactory<Component>
+  variantsConfig: VariantsConfig<VariantProps, ExtraProps>
+  resolveFactory: (tag: T) => VariantFactory<Component, ExtraProps, VariantProps> | undefined
+  fallbackFactory?: VariantFactory<Component, ExtraProps, VariantProps>
   warn?: (message: string) => void
 }
 
-const createVariantMap = <T extends string, Component>({
+const createVariantMap = <
+  T extends string,
+  Component,
+  ExtraProps extends object,
+  VariantProps extends object,
+>({
   elements,
   variantsConfig,
   resolveFactory,
   fallbackFactory,
   warn = console.warn,
-}: CreateVariantMapOptions<T, Component>): Record<T, Component> => {
+}: CreateVariantMapOptions<T, Component, ExtraProps, VariantProps>): Record<T, Component> => {
   const uniqueElements = new Set(elements)
   if (uniqueElements.size !== elements.length) {
     const duplicates = elements.filter((item, index) => elements.indexOf(item) !== index)

@@ -1,6 +1,6 @@
 # @classmatejs/factory
 
-Headless version of the Classmate factory. It reuses the same styling and variants logic from `@classmatejs/core` but, instead of returning framework components, it simply computes class name strings (merged through `tailwind-merge`).
+Headless version of the Classmate factory. It reuses the same styling and variants logic from `@classmatejs/core` but, instead of returning framework components, it simply computes class name strings (merged through `tailwind-merge`). Perfect for CLI renderers, template engines, or other environments where you only need strings.
 
 ```ts
 import cm from "@classmatejs/factory"
@@ -39,4 +39,79 @@ alertWithIcon({ $tone: "error", $withIcon: true })
 // => "inline-flex ... bg-red-500 text-white pl-8"
 ```
 
-Refer to `@classmatejs/react` for detailed docs — the behavior is identical except that no framework component is created.
+## Factory examples
+
+Each “factory” below mirrors the React/Solid API but remains framework agnostic.
+
+### Base factory (`cm`)
+
+```ts
+const badge = cm<{ $tone?: "info" | "danger" }>`
+  inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold
+  ${(p) => (p.$tone === "danger" ? "bg-red-600 text-white" : "bg-blue-600 text-white")}
+`
+
+badge({ $tone: "danger", class: "shadow" })
+// => "inline-flex ... bg-red-600 text-white shadow"
+```
+
+### Variants factory (`cm.variants`)
+
+```ts
+const button = cm.variants<{ $disabled?: boolean }, { $size: "sm" | "lg" }>({
+  base: (p) => `inline-flex items-center justify-center font-medium ${p.$disabled ? "opacity-60" : ""}`,
+  variants: {
+    $size: {
+      sm: "text-sm px-3 py-1.5",
+      lg: "text-lg px-5 py-3",
+    },
+  },
+  defaultVariants: {
+    $size: "sm",
+  },
+})
+
+button({ $size: "lg" })
+// => "inline-flex ... text-lg px-5 py-3"
+```
+
+### Extend factory (`cm.extend`)
+
+```ts
+const card = cm`
+  rounded-xl border bg-white p-4 shadow-sm
+`
+
+const cardWithState = cm.extend(card)<{ $highlight?: boolean }>`
+  ${(p) => (p.$highlight ? "ring-2 ring-blue-500" : "")}
+`
+
+cardWithState({ $highlight: true })
+// => "rounded-xl border bg-white p-4 shadow-sm ring-2 ring-blue-500"
+```
+
+### Extend + variants (`cm.extend(...).variants`)
+
+```ts
+const surface = cm`
+  rounded-lg border bg-background p-6
+`
+
+const surfaceWithVariants = cm.extend(surface).variants<{ $tone: "default" | "muted" }, { $density: "spacious" | "compact" }>({
+  base: (p) => (p.$tone === "muted" ? "bg-muted text-muted-foreground" : ""),
+  variants: {
+    $density: {
+      spacious: "gap-4",
+      compact: "gap-2",
+    },
+  },
+  defaultVariants: {
+    $density: "spacious",
+  },
+})
+
+surfaceWithVariants({ $tone: "muted", $density: "compact" })
+// => "rounded-lg border bg-background p-6 bg-muted text-muted-foreground gap-2"
+```
+
+Refer to `@classmatejs/react` for detailed docs — the runtime behavior is identical except that no framework component is created.

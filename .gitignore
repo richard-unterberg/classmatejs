@@ -13,4 +13,4 @@ docs/dist
 *.code-workspace
 
 test-results
-old-solidjs
+old-but-working-lib

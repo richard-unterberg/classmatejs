@@ -1,26 +1,36 @@
 import type { VariantsConfig } from "../types"
 import createVariantMap from "./createVariantMap"
 
-interface VariantsFactory<Component> {
-  variants: (config: VariantsConfig<any, any>) => Component
+interface VariantsFactory<Component, ExtraProps extends object, VariantProps extends object> {
+  variants: (config: VariantsConfig<VariantProps, ExtraProps>) => Component
 }
 
-export interface CreateRuntimeVariantMapOptions<T extends string, Component> {
-  runtime: Record<string, VariantsFactory<Component>>
+export interface CreateRuntimeVariantMapOptions<
+  T extends string,
+  Component,
+  ExtraProps extends object,
+  VariantProps extends object,
+> {
+  runtime: Record<string, VariantsFactory<Component, ExtraProps, VariantProps>>
   elements: readonly T[]
-  variantsConfig: VariantsConfig<any, any>
+  variantsConfig: VariantsConfig<VariantProps, ExtraProps>
   fallbackTag: string
   warn?: (message: string) => void
 }
 
-const createRuntimeVariantMap = <T extends string, Component>({
+const createRuntimeVariantMap = <
+  T extends string,
+  Component,
+  ExtraProps extends object,
+  VariantProps extends object,
+>({
   runtime,
   elements,
   variantsConfig,
   fallbackTag,
   warn,
-}: CreateRuntimeVariantMapOptions<T, Component>): Record<T, Component> => {
-  const resolveFactory = (tag: string): VariantsFactory<Component> | undefined => {
+}: CreateRuntimeVariantMapOptions<T, Component, ExtraProps, VariantProps>): Record<T, Component> => {
+  const resolveFactory = (tag: string): VariantsFactory<Component, ExtraProps, VariantProps> | undefined => {
     const factory = runtime[tag]
     if (!factory || typeof factory.variants !== "function") {
       return undefined
@@ -30,7 +40,7 @@ const createRuntimeVariantMap = <T extends string, Component>({
 
   const fallbackFactory = resolveFactory(fallbackTag)
 
-  return createVariantMap<T, Component>({
+  return createVariantMap<T, Component, ExtraProps, VariantProps>({
     elements,
     variantsConfig,
     resolveFactory,

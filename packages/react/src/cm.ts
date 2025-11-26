@@ -20,34 +20,50 @@ import type {
 } from "./types"
 import createReactElement from "./util/createReactElement"
 
+type InferComponentProps<Component> = Component extends CmBaseComponent<infer P> ? P : object
+
 const createExtendBuilder = (
   baseComponent: CmBaseComponent<any>,
   logicHandlers: LogicHandler<any>[] = [],
 ) => {
+  type BaseInstance = typeof baseComponent
+  type BaseProps = InferComponentProps<BaseInstance>
+  type ExtendedProps<T extends object> = MergeProps<BaseInstance, T>
+
   const builder = <T extends object>(strings: TemplateStringsArray, ...interpolations: Interpolation<T>[]) =>
-    createExtendedComponent<T, keyof JSX.IntrinsicElements | InputComponent>(
+    createExtendedComponent<BaseProps, ExtendedProps<T>, keyof JSX.IntrinsicElements | InputComponent>(
       baseComponent,
       strings,
       interpolations,
       createReactElement,
-      logicHandlers as LogicHandler<T>[],
-    ) as CmBaseComponent<T>
+      logicHandlers as LogicHandler<ExtendedProps<T>>[],
+    ) as CmBaseComponent<ExtendedProps<T>>
 
   const builderWithLogic = builder as typeof builder & {
     logic: (handler: LogicHandler<any>) => ReturnType<typeof createExtendBuilder>
-    variants: (config: VariantsConfig<any, any>) => CmBaseComponent<any>
+    variants: <ExtraProps extends object, VariantProps extends object = ExtraProps>(
+      config: VariantsConfig<VariantProps, ExtraProps>,
+    ) => CmBaseComponent<ExtendedProps<ExtraProps & Partial<VariantProps>>>
   }
 
   builderWithLogic.logic = (handler: LogicHandler<any>) =>
     createExtendBuilder(baseComponent, [...logicHandlers, handler])
 
-  builderWithLogic.variants = (config: VariantsConfig<any, any>) =>
-    createExtendedVariantsComponent<keyof JSX.IntrinsicElements | InputComponent, any, any, any>(
+  builderWithLogic.variants = <ExtraProps extends object, VariantProps extends object = ExtraProps>(
+    config: VariantsConfig<VariantProps, ExtraProps>,
+  ) =>
+    createExtendedVariantsComponent<
+      keyof JSX.IntrinsicElements | InputComponent,
+      BaseProps,
+      ExtraProps,
+      VariantProps,
+      ExtendedProps<ExtraProps & Partial<VariantProps>>
+    >(
       baseComponent,
       config,
       createReactElement,
-      logicHandlers as LogicHandler<any>[],
-    ) as CmBaseComponent<any>
+      logicHandlers as LogicHandler<ExtendedProps<ExtraProps & Partial<VariantProps>>>[],
+    ) as CmBaseComponent<ExtendedProps<ExtraProps & Partial<VariantProps>>>
 
   return builderWithLogic
 }
@@ -66,10 +82,19 @@ const createFactoryFunction = <E extends CmIntrinsicElement>(
   factoryWithLogic.logic = ((handler: LogicHandler<any>) =>
     createFactoryFunction(tag, [...logicHandlers, handler])) as CmFactoryFunction<E>["logic"]
 
-  factoryWithLogic.variants = ((config: VariantsConfig<any, any>) =>
-    createVariantsComponent<E, any, any, MergeProps<E, any>>(tag, config, createReactElement, {
-      logic: logicHandlers as LogicHandler<MergeProps<E, any>>[],
-    }) as CmBaseComponent<MergeProps<E, any>>) as CmFactoryFunction<E>["variants"]
+  factoryWithLogic.variants = (<ExtraProps extends object, VariantProps extends object = ExtraProps>(
+    config: VariantsConfig<VariantProps, ExtraProps>,
+  ) =>
+    createVariantsComponent<E, ExtraProps, VariantProps, MergeProps<E, ExtraProps & Partial<VariantProps>>>(
+      tag,
+      config,
+      createReactElement,
+      {
+        logic: logicHandlers as LogicHandler<MergeProps<E, ExtraProps & Partial<VariantProps>>>[],
+      },
+    ) as CmBaseComponent<
+      MergeProps<E, ExtraProps & Partial<VariantProps>>
+    >) as CmFactoryFunction<E>["variants"]
 
   return factoryWithLogic
 }

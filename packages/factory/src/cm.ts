@@ -16,14 +16,18 @@ import type {
 } from "./types"
 import createClassProcessor from "./util/createClassProcessor"
 
+type InferBaseProps<Base> = Base extends CfBaseComponent<infer P> ? P : object
+
 const CM_TAG = "cm"
 
 const createExtendBuilder = <Base extends CfBaseComponent<any>>(baseComponent: Base): ExtendBuilder<Base> => {
+  type BaseProps = InferBaseProps<Base>
+
   const builder = <T extends object>(
     strings: TemplateStringsArray,
     ...interpolations: Interpolation<MergeProps<Base, T>>[]
   ) =>
-    createExtendedComponent<MergeProps<Base, T>, string>(
+    createExtendedComponent<BaseProps, MergeProps<Base, T>, string>(
       baseComponent,
       strings,
       interpolations,
@@ -37,6 +41,7 @@ const createExtendBuilder = <Base extends CfBaseComponent<any>>(baseComponent: B
   ) =>
     createExtendedVariantsComponent<
       string,
+      BaseProps,
       ExtraProps,
       VariantProps,
       MergeProps<Base, ExtraProps & Partial<VariantProps>>

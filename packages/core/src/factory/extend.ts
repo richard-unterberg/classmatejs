@@ -7,8 +7,8 @@ import type {
   VariantsConfig,
 } from "../types"
 
-const createExtendedComponent = <P extends object, Tag>(
-  baseComponent: RuntimeComponent<any>,
+const createExtendedComponent = <BaseProps extends object, P extends object, Tag>(
+  baseComponent: RuntimeComponent<BaseProps>,
   strings: TemplateStringsArray,
   interpolations: Interpolation<P>[],
   renderComponent: ComponentRenderer<Tag>,
@@ -18,8 +18,8 @@ const createExtendedComponent = <P extends object, Tag>(
   const baseComputeClassName = baseComponent.__rcComputeClassName || (() => "")
   const baseStyles = baseComponent.__rcStyles || {}
   const tag = (baseComponent.__rcTag as Tag) || (baseComponent as unknown as Tag)
-  const baseLogic = (baseComponent.__rcLogic as LogicHandler<any>[]) || []
-  const combinedLogic = [...baseLogic, ...logicHandlers]
+  const baseLogic = (baseComponent.__rcLogic as LogicHandler<BaseProps>[]) || []
+  const combinedLogic = [...(baseLogic as unknown as LogicHandler<P>[]), ...logicHandlers]
 
   const computeClassName = (props: P, collectedStyles: Record<string, string | number>) => {
     const styleUtility = (styleDef: StyleDefinition<P>) => {
@@ -28,9 +28,9 @@ const createExtendedComponent = <P extends object, Tag>(
     }
 
     const baseClassName = baseComputeClassName({
-      ...props,
-      style: styleUtility,
-    })
+      ...(props as unknown as BaseProps),
+      style: styleUtility as unknown as (styleDef: StyleDefinition<BaseProps>) => string,
+    } as BaseProps & { style: (styleDef: StyleDefinition<BaseProps>) => string })
 
     const extendedClassName = strings
       .map((str, i) => {
@@ -52,9 +52,11 @@ const createExtendedComponent = <P extends object, Tag>(
     computeClassName(props, collectedStyles)
 
     const resolvedBaseStyles =
-      typeof baseStyles === "function" ? (baseStyles as (props: P) => StyleDefinition<P>)(props) : baseStyles
+      typeof baseStyles === "function"
+        ? (baseStyles as (props: BaseProps) => StyleDefinition<BaseProps>)(props as unknown as BaseProps)
+        : baseStyles
 
-    return { ...resolvedBaseStyles, ...collectedStyles }
+    return { ...resolvedBaseStyles, ...collectedStyles } as StyleDefinition<P>
   }
 
   return renderComponent({
@@ -62,7 +64,7 @@ const createExtendedComponent = <P extends object, Tag>(
     computeClassName: (props) => computeClassName(props, {}),
     displayName,
     styles: (props) => computeMergedStyles(props),
-    logicHandlers: combinedLogic as LogicHandler<any>[],
+    logicHandlers: combinedLogic,
   })
 }
 
@@ -100,11 +102,12 @@ const computeVariantClasses = <VariantProps extends object, ExtraProps extends o
 
 const createExtendedVariantsComponent = <
   Tag,
+  BaseProps extends object,
   ExtraProps extends object,
   VariantProps extends object,
-  ComponentProps extends object = ExtraProps & Partial<VariantProps>,
+  ComponentProps extends object,
 >(
-  baseComponent: RuntimeComponent<any>,
+  baseComponent: RuntimeComponent<BaseProps>,
   config: VariantsConfig<VariantProps, ExtraProps>,
   renderComponent: ComponentRenderer<Tag>,
   logicHandlers: LogicHandler<ComponentProps>[] = [],
@@ -113,8 +116,8 @@ const createExtendedVariantsComponent = <
   const baseComputeClassName = baseComponent.__rcComputeClassName || (() => "")
   const baseStyles = baseComponent.__rcStyles || {}
   const tag = (baseComponent.__rcTag as Tag) || (baseComponent as unknown as Tag)
-  const baseLogic = (baseComponent.__rcLogic as LogicHandler<any>[]) || []
-  const combinedLogic = [...baseLogic, ...logicHandlers]
+  const baseLogic = (baseComponent.__rcLogic as LogicHandler<BaseProps>[]) || []
+  const combinedLogic = [...(baseLogic as unknown as LogicHandler<ComponentProps>[]), ...logicHandlers]
   const propsToFilter = Object.keys(config.variants || {}) as (keyof ComponentProps)[]
 
   const computeClassName = (props: ComponentProps, collectedStyles: Record<string, string | number>) => {
@@ -129,9 +132,9 @@ const createExtendedVariantsComponent = <
     ) => string
 
     const baseClassName = baseComputeClassName({
-      ...props,
-      style: styleUtility,
-    })
+      ...(props as unknown as BaseProps),
+      style: styleUtility as unknown as (styleDef: StyleDefinition<BaseProps>) => string,
+    } as BaseProps & { style: (styleDef: StyleDefinition<BaseProps>) => string })
 
     const variantClassName = computeVariantClasses(config, variantProps, styleForVariants)
 
@@ -144,13 +147,13 @@ const createExtendedVariantsComponent = <
 
     const resolvedBaseStyles =
       typeof baseStyles === "function"
-        ? (baseStyles as (props: ComponentProps) => StyleDefinition<ComponentProps>)(props)
+        ? (baseStyles as (props: BaseProps) => StyleDefinition<BaseProps>)(props as unknown as BaseProps)
         : baseStyles
 
     return {
       ...resolvedBaseStyles,
       ...collectedStyles,
-    }
+    } as StyleDefinition<ComponentProps>
   }
 
   return renderComponent({
@@ -159,7 +162,7 @@ const createExtendedVariantsComponent = <
     displayName,
     styles: (props) => computeMergedStyles(props),
     propsToFilter,
-    logicHandlers: combinedLogic as LogicHandler<any>[],
+    logicHandlers: combinedLogic,
   })
 }
 

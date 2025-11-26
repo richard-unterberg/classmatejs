@@ -47,15 +47,30 @@ const createVariantsComponent = <
       const propValue =
         (props as Record<string, string | undefined>)[key] ??
         (defaultVariants as Record<string, string | undefined>)[key]
-      const variantClass = propValue ? (variantOptions as Record<string, any>)?.[propValue] : undefined
 
-      if (typeof variantClass === "function") {
-        return variantClass({
+      if (!propValue) {
+        return ""
+      }
+
+      const option =
+        (
+          variantOptions as Record<
+            string,
+            | string
+            | ((
+                props: VariantProps &
+                  ExtraProps & { style: (styleDef: StyleDefinition<VariantProps & ExtraProps>) => string },
+              ) => string)
+          >
+        )[propValue] || ""
+
+      if (typeof option === "function") {
+        return option({
           ...variantProps,
           style: styleForVariants,
         })
       }
-      return variantClass || ""
+      return option
     })
 
     return [baseClasses, ...variantClasses].filter(Boolean).join(" ").trim().replace(/\s+/g, " ").trim()
