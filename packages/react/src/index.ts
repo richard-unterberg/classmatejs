@@ -1,10 +1,8 @@
-import { domElements } from "@classmatejs/core"
 import { twMerge } from "tailwind-merge"
-
 import cmInit from "./cm"
 import convertCmProps from "./helper/convertCmProps"
 import createVariantMap from "./helper/createVariantMap"
-import type { CmComponentFactory } from "./types"
+import type { RcComponentFactory } from "./types"
 
 /**
  * The `cm` instance is the main entry point for creating our classmate-components.
@@ -54,20 +52,17 @@ import type { CmComponentFactory } from "./types"
  * })
  * ```
  */
-const cm = cmInit as CmComponentFactory
+const cm = cmInit as RcComponentFactory
 
-export { cm }
-
-export type { CmBaseComponent } from "./types"
+export type { RcBaseComponent } from "./types"
 export type { VariantsConfig } from "./types"
 
-export { convertCmProps }
+export { convertCmProps, convertCmProps as convertRcProps }
 export { createVariantMap }
 export { default as useClassmate } from "./useClassmate"
-export { domElements }
 
 export default cm
 
-/** the `twMerge` lib from @classmatejs/react */
+/** the `twMerge` lib from react-classmate */
 const cmMerge = twMerge
 export { cmMerge }

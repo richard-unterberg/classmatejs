@@ -27,4 +27,23 @@
  *  $noGutter: false,
  * }
  */
-export { convertRuntimeProps as default } from "@classmatejs/core"
+const convertCmProps = <T extends object, BaseProps extends object, K extends keyof BaseProps & keyof T>(
+  props: T,
+  mappings: Record<K, `$${K & string}`>,
+): Omit<T, K> & Record<string, any> => {
+  const source = props as Record<string, any>
+  const result: Record<string, any> = {}
+
+  for (const key of Object.keys(source)) {
+    if (key in mappings) {
+      const mappedKey = mappings[key as K]
+      result[mappedKey] = source[key]
+    } else {
+      result[key] = source[key]
+    }
+  }
+
+  return result as Omit<T, K> & Record<string, any>
+}
+
+export default convertCmProps

@@ -1,20 +1,19 @@
 {
   "name": "classmate",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.5",
   "type": "module",
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build -ws --if-present",
-    "test": "npm run build && npm run test:src -w @classmatejs/react && npm run test -w @classmatejs/solid && npm run test -w @classmatejs/factory",
+    "build": "npm run build -w @classmatejs/react && npm run build -w @classmatejs/solid",
+    "test": "npm run build && npm run test:src -w @classmatejs/react && npm run test -w @classmatejs/solid",
     "lint": "npm run lint -ws --if-present",
     "clean": "npm run clean -ws --if-present",
     "publish:classmate": "npm run package -w @classmatejs/react",
     "publish:solid": "npm run package -w @classmatejs/solid",
-    "publish:factory": "npm run package -w @classmatejs/factory",
-    "publish:all": "npm run publish:classmate && npm run publish:solid && npm run publish:factory",
+    "publish:all": "npm run publish:classmate && npm run publish:solid",
     "docs": "npm run dev -w docs",
     "docs:build": "npm run build -w docs",
     "docs:preview": "npm run preview -w docs"

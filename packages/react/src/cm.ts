@@ -1,49 +1,38 @@
-import {
-  createBaseComponent,
-  createExtendedComponent,
-  createExtendedVariantsComponent,
-  createVariantsComponent,
-  domElements,
-} from "@classmatejs/core"
 import type { JSX } from "react"
 
+import createBaseComponent from "./factory/base"
+import createExtendedComponent, { createExtendedVariantsComponent } from "./factory/extend"
+import createVariantsComponent from "./factory/variants"
 import type {
-  CmBaseComponent,
-  CmComponentFactory,
-  CmFactoryFunction,
-  CmIntrinsicElement,
   InputComponent,
   Interpolation,
   LogicHandler,
   MergeProps,
+  RcBaseComponent,
+  RcComponentFactory,
   VariantsConfig,
 } from "./types"
-import createReactElement from "./util/createReactElement"
+import { domElements } from "./util/domElements"
 
-type InferComponentProps<Component> = Component extends CmBaseComponent<infer P> ? P : object
+/**
+ * Intercepts property lookups:
+ * - `rc.extend`: returns function to extend an existing component
+ * - `rc.button`, `rc.div`, etc.: returns factory for base components, with `.variants`
+ */
+type InferComponentProps<Component> = Component extends RcBaseComponent<infer P> ? P : object
 
 const createExtendBuilder = (
-  baseComponent: CmBaseComponent<any>,
+  baseComponent: RcBaseComponent<any>,
   logicHandlers: LogicHandler<any>[] = [],
 ) => {
-  type BaseInstance = typeof baseComponent
-  type BaseProps = InferComponentProps<BaseInstance>
-  type ExtendedProps<T extends object> = MergeProps<BaseInstance, T>
-
   const builder = <T extends object>(strings: TemplateStringsArray, ...interpolations: Interpolation<T>[]) =>
-    createExtendedComponent<BaseProps, ExtendedProps<T>, keyof JSX.IntrinsicElements | InputComponent>(
-      baseComponent,
-      strings,
-      interpolations,
-      createReactElement,
-      logicHandlers as LogicHandler<ExtendedProps<T>>[],
-    ) as CmBaseComponent<ExtendedProps<T>>
+    createExtendedComponent<T>(baseComponent, strings, interpolations, logicHandlers as LogicHandler<T>[])
 
   const builderWithLogic = builder as typeof builder & {
     logic: (handler: LogicHandler<any>) => ReturnType<typeof createExtendBuilder>
     variants: <ExtraProps extends object, VariantProps extends object = ExtraProps>(
       config: VariantsConfig<VariantProps, ExtraProps>,
-    ) => CmBaseComponent<ExtendedProps<ExtraProps & Partial<VariantProps>>>
+    ) => RcBaseComponent<MergeProps<typeof baseComponent, ExtraProps & Partial<VariantProps>>>
   }
 
   builderWithLogic.logic = (handler: LogicHandler<any>) =>
@@ -53,65 +42,54 @@ const createExtendBuilder = (
     config: VariantsConfig<VariantProps, ExtraProps>,
   ) =>
     createExtendedVariantsComponent<
-      keyof JSX.IntrinsicElements | InputComponent,
-      BaseProps,
+      InferComponentProps<typeof baseComponent>,
       ExtraProps,
       VariantProps,
-      ExtendedProps<ExtraProps & Partial<VariantProps>>
+      MergeProps<typeof baseComponent, ExtraProps & Partial<VariantProps>>
     >(
       baseComponent,
       config,
-      createReactElement,
-      logicHandlers as LogicHandler<ExtendedProps<ExtraProps & Partial<VariantProps>>>[],
-    ) as CmBaseComponent<ExtendedProps<ExtraProps & Partial<VariantProps>>>
+      logicHandlers as LogicHandler<MergeProps<typeof baseComponent, ExtraProps & Partial<VariantProps>>>[],
+    )
 
   return builderWithLogic
 }
 
-const createFactoryFunction = <E extends CmIntrinsicElement>(
-  tag: E,
-  logicHandlers: LogicHandler<any>[] = [],
-): CmFactoryFunction<E> => {
+const createFactoryFunction = (tag: keyof JSX.IntrinsicElements, logicHandlers: LogicHandler<any>[] = []) => {
   const factory = <T extends object>(strings: TemplateStringsArray, ...interpolations: Interpolation<T>[]) =>
-    createBaseComponent<MergeProps<E, T>, E>(tag, strings, interpolations, createReactElement, {
-      logic: logicHandlers as LogicHandler<MergeProps<E, T>>[],
-    }) as CmBaseComponent<MergeProps<E, T>>
+    createBaseComponent<T, keyof JSX.IntrinsicElements>(tag, strings, interpolations, {
+      logic: logicHandlers as LogicHandler<any>[],
+    })
 
-  const factoryWithLogic = factory as CmFactoryFunction<E>
+  const factoryWithLogic = factory as typeof factory & {
+    logic: (handler: LogicHandler<any>) => ReturnType<typeof createFactoryFunction>
+    variants: <ExtraProps extends object, VariantProps extends object = ExtraProps>(
+      config: VariantsConfig<VariantProps, ExtraProps>,
+    ) => RcBaseComponent<any>
+  }
 
-  factoryWithLogic.logic = ((handler: LogicHandler<any>) =>
-    createFactoryFunction(tag, [...logicHandlers, handler])) as CmFactoryFunction<E>["logic"]
+  factoryWithLogic.logic = (handler: LogicHandler<any>) =>
+    createFactoryFunction(tag, [...logicHandlers, handler])
 
-  factoryWithLogic.variants = (<ExtraProps extends object, VariantProps extends object = ExtraProps>(
+  factoryWithLogic.variants = <ExtraProps extends object, VariantProps extends object = ExtraProps>(
     config: VariantsConfig<VariantProps, ExtraProps>,
   ) =>
-    createVariantsComponent<E, ExtraProps, VariantProps, MergeProps<E, ExtraProps & Partial<VariantProps>>>(
-      tag,
-      config,
-      createReactElement,
-      {
-        logic: logicHandlers as LogicHandler<MergeProps<E, ExtraProps & Partial<VariantProps>>>[],
-      },
-    ) as CmBaseComponent<
-      MergeProps<E, ExtraProps & Partial<VariantProps>>
-    >) as CmFactoryFunction<E>["variants"]
+    createVariantsComponent<keyof JSX.IntrinsicElements, ExtraProps, VariantProps>(tag, config, {
+      logic: logicHandlers as LogicHandler<any>[],
+    })
 
   return factoryWithLogic
 }
 
-const cmTarget = Object.create(null) as Record<string, CmFactoryFunction<any>> & {
-  extend?: CmComponentFactory["extend"]
-}
+const cmTarget = Object.create(null) as RcComponentFactory
 
 for (const tag of domElements) {
-  if (!cmTarget[tag]) {
-    cmTarget[tag] = createFactoryFunction(tag as CmIntrinsicElement)
-  }
+  cmTarget[tag] = createFactoryFunction(tag as keyof JSX.IntrinsicElements)
 }
 
-cmTarget.extend = <BCProps extends object>(baseComponent: CmBaseComponent<BCProps> | InputComponent) =>
-  createExtendBuilder(baseComponent as CmBaseComponent<any>)
+cmTarget.extend = <BCProps extends object>(baseComponent: RcBaseComponent<BCProps> | InputComponent) =>
+  createExtendBuilder(baseComponent as RcBaseComponent<any>)
 
-const cm = cmTarget as unknown as CmComponentFactory
+const cm = cmTarget
 
 export default cm

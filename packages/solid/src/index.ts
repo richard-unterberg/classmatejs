@@ -1,11 +1,8 @@
-import { domElements } from "@classmatejs/core"
 import { twMerge } from "tailwind-merge"
-
 import cmInit from "./cm"
-import createClassmate from "./createClassmate"
 import convertCmProps from "./helper/convertCmProps"
 import createVariantMap from "./helper/createVariantMap"
-import type { CmComponentFactory } from "./types"
+import type { ScComponentFactory } from "./types"
 
 /**
  * The `cm` instance is the main entry point for creating our classmate-components.
@@ -14,7 +11,7 @@ import type { CmComponentFactory } from "./types"
  * - A variants method to create classmate components  with variants. E.g: `cm.div.variants(...)`
  * - The `cm.extend` method that allows you to create new classmate components based on existing ones.
  *
- * Each styled component created via `cm` filters out `$`-prefixed props from the DOM and computes a final `className`
+ * Each styled component created via `cm` filters out `$`-prefixed props from the DOM and computes a final `class`
  * string by combining user-defined classes, dynamic interpolations based on props, and any incoming `className`.
  *
  * @example
@@ -55,19 +52,17 @@ import type { CmComponentFactory } from "./types"
  * })
  * ```
  */
-const cm = cmInit as CmComponentFactory
+const cm = cmInit as ScComponentFactory
 
-export { cm }
-
-export type { CmBaseComponent } from "./types"
+export type { ScBaseComponent } from "./types"
 export type { VariantsConfig } from "./types"
 
 export { convertCmProps }
 export { createVariantMap }
-export { createClassmate }
-export { domElements }
+export { default as createClassmate } from "./createClassmate"
 
 export default cm
 
+/** the `twMerge` lib from solid-classmate */
 const cmMerge = twMerge
 export { cmMerge }

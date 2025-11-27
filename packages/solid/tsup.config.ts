@@ -21,8 +21,17 @@ export default defineConfig({
       options.footer = {}
     }
     if (context.format === "cjs") {
-      options.footer.js =
-        "module.exports = Object.assign(module.exports.default || module.exports, module.exports);"
+      options.footer.js = `
+if (module && module.exports && module.exports.default) {
+  const __cmExports = module.exports
+  const __cmDefault = __cmExports.default
+  if (__cmDefault && (typeof __cmDefault === "object" || typeof __cmDefault === "function")) {
+    Object.assign(__cmDefault, __cmExports)
+    module.exports = __cmDefault
+    module.exports.default = module.exports
+  }
+}
+`.trim()
     }
   },
 })

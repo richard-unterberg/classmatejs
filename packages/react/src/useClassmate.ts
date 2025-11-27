@@ -1,6 +1,6 @@
 import { type DependencyList, useMemo } from "react"
 
-import type { CmBaseComponent } from "./types"
+import type { RcBaseComponent } from "./types"
 
 /**
  * Memoizes a classmate component factory within a React component.
@@ -14,7 +14,7 @@ import type { CmBaseComponent } from "./types"
  * const Component = ({ $status }: { $status: "info" | "warning" }) => {
  *   const StyledAlert = useClassmate(
  *     () =>
- *       cm.div.variants({
+ *       rc.div.variants({
  *         base: "p-4 rounded",
  *         variants: {
  *           $status: {
@@ -31,9 +31,9 @@ import type { CmBaseComponent } from "./types"
  * ```
  */
 const useClassmate = <Props extends object>(
-  factory: () => CmBaseComponent<Props>,
+  factory: () => RcBaseComponent<Props>,
   deps: DependencyList = [],
-): CmBaseComponent<Props> => {
+): RcBaseComponent<Props> => {
   return useMemo(factory, deps)
 }
 

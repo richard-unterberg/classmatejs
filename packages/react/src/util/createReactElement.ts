@@ -1,9 +1,8 @@
 import { type JSX, type JSXElementConstructor, type RefAttributes, createElement, forwardRef } from "react"
 import { twMerge } from "tailwind-merge"
 
-import { applyLogicHandlers } from "@classmatejs/core"
-
-import type { CmBaseComponent, LogicHandler, StyleDefinition } from "../types"
+import type { LogicHandler, RcBaseComponent, StyleDefinition } from "../types"
+import applyLogicHandlers from "./applyLogicHandlers"
 
 interface CreateReactElementParams<
   T extends object,
@@ -38,7 +37,7 @@ const createReactElement = <
   styles = {},
   propsToFilter = [],
   logicHandlers = [],
-}: CreateReactElementParams<T, E>): CmBaseComponent<T> => {
+}: CreateReactElementParams<T, E>): RcBaseComponent<T> => {
   const element = forwardRef<HTMLElement, T & RefAttributes<any>>((props, ref) => {
     const baseProps = props as T
     const enhancedProps = logicHandlers.length > 0 ? applyLogicHandlers(baseProps, logicHandlers) : baseProps
@@ -73,9 +72,9 @@ const createReactElement = <
       style: mergedStyles,
       ref,
     })
-  }) as CmBaseComponent<T>
+  }) as RcBaseComponent<T>
 
-  element.displayName = displayName || "Cm Component"
+  element.displayName = displayName || "Rc Component"
   element.__rcComputeClassName = (props: T) =>
     computeClassName(logicHandlers.length > 0 ? applyLogicHandlers(props, logicHandlers) : props)
   element.__rcStyles = styles

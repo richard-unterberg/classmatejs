@@ -13,5 +13,5 @@ docs/dist
 *.code-workspace
 
 test-results
-old-but-working-lib
+old-but-working-react-lib
 old-but-working-solid-lib

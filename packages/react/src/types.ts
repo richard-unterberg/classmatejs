@@ -1,11 +1,5 @@
 import type {
-  AllowedTags,
-  Interpolation,
-  LogicHandler,
-  RuntimeComponent,
-  VariantsConfig,
-} from "@classmatejs/core"
-import type {
+  CSSProperties,
   ForwardRefExoticComponent,
   JSX,
   JSXElementConstructor,
@@ -13,29 +7,38 @@ import type {
   RefAttributes,
 } from "react"
 
-export type {
-  AllowedTags,
-  Interpolation,
-  LogicHandler,
-  VariantsConfig,
-  StyleDefinition,
-} from "@classmatejs/core"
+/**
+ * Interpolation type for "styled components".
+ *
+ * Interpolations can be:
+ * - Static strings or booleans.
+ * - Functions that take the component's props and return a class name string.
+ * - Null or undefined values (ignored in class name computation).
+ *
+ * @typeParam T - The type of the props passed to the interpolation function.
+ */
+type InterpolationBase<T> = string | boolean | ((props: T) => string) | null | undefined
+export type Interpolation<T> = InterpolationBase<T & { style: (styleDef: StyleDefinition<T>) => string }>
 
-export type CmIntrinsicElement = Extract<AllowedTags, keyof JSX.IntrinsicElements>
+export type LogicHandler<P extends object> = (props: P) => Partial<P> | undefined
 
 export type InputComponent =
   | ForwardRefExoticComponent<any>
   | JSXElementConstructor<any>
-  | CmBaseComponent<any>
+  | RcBaseComponent<any>
 
 /**
  * Base type for styled React components with forward refs.
  *
  * @typeParam P - Props of the component.
  */
-export interface CmBaseComponent<P extends object = object>
-  extends RuntimeComponent<P>,
-    ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<any>> {}
+export interface RcBaseComponent<P extends object = object>
+  extends ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<any>> {
+  __rcComputeClassName?: (props: P) => string
+  __rcTag?: keyof React.JSX.IntrinsicElements | JSXElementConstructor<any>
+  __rcStyles?: StyleDefinition<P> | ((props: P) => StyleDefinition<P>)
+  __rcLogic?: LogicHandler<P>[]
+}
 
 /**
  * The `extend` method allows you to create a new styled component from an existing one.
@@ -46,14 +49,14 @@ export interface CmBaseComponent<P extends object = object>
  * @example
  * ```tsx
  * // Extending a custom component without intrinsic element type
- * const SomeBase = cm.div<{ $active?: boolean }>`color: red;`
- * const Extended = cm.extend(SomeBase)<{ $highlighted?: boolean }>`
+ * const SomeBase = rc.div<{ $active?: boolean }>`color: red;`
+ * const Extended = rc.extend(SomeBase)<{ $highlighted?: boolean }>`
  *   ${p => p.$highlighted ? 'bg-yellow' : ''}
  *   ${p => p.$active ? 'text-red' : ''}
  * `
  *
  * // Extending with specific props:
- * const ExtendedButton = cm.extend(StyledButton)<ButtonHTMLAttributes<HTMLButtonElement>>`
+ * const ExtendedButton = rc.extend(StyledButton)<ButtonHTMLAttributes<HTMLButtonElement>>`
  *   ${p => p.type === 'submit' ? 'font-bold' : ''}
  * ```
  */
@@ -68,34 +71,36 @@ type ExtendFunction =
    * @example
    * ```tsx
    * // Extending a custom component without intrinsic element type
-   * const SomeBase = cm.div<{ $active?: boolean }>`color: red;`
-   * const Extended = cm.extend(SomeBase)<{ $highlighted?: boolean }>`
+   * const SomeBase = rc.div<{ $active?: boolean }>`color: red;`
+   * const Extended = rc.extend(SomeBase)<{ $highlighted?: boolean }>`
    *   ${p => p.$highlighted ? 'bg-yellow' : ''}
    *   ${p => p.$active ? 'text-red' : ''}
    * `
    *
    * // Extending with specific props:
-   * const ExtendedButton = cm.extend(StyledButton)<ButtonHTMLAttributes<HTMLButtonElement>>`
+   * const ExtendedButton = rc.extend(StyledButton)<ButtonHTMLAttributes<HTMLButtonElement>>`
    *   ${p => p.type === 'submit' ? 'font-bold' : ''}
    * ```
    */
-  <E extends InputComponent, I extends CmIntrinsicElement>(component: E) => ExtendTemplateBuilder<E, I>
+  <E extends InputComponent, I extends keyof JSX.IntrinsicElements>(
+    component: E,
+  ) => ExtendTemplateBuilder<E, I>
 
 export interface ExtendTemplateBuilder<
   E extends InputComponent,
-  I extends CmIntrinsicElement,
+  I extends keyof JSX.IntrinsicElements,
   LogicProps extends object = object,
 > {
   <T extends object>(
     strings: TemplateStringsArray,
     ...interpolations: Interpolation<MergeProps<E, T> & JSX.IntrinsicElements[I]>[]
-  ): CmBaseComponent<MergeProps<E, T>>
+  ): RcBaseComponent<MergeProps<E, T>>
   logic<NextLogic extends object = object>(
     handler: LogicHandler<MergeProps<E, LogicProps & NextLogic>>,
   ): ExtendTemplateBuilder<E, I, LogicProps & NextLogic>
   variants<ExtraProps extends object, VariantProps extends object = ExtraProps>(
     config: VariantsConfig<VariantProps, ExtraProps>,
-  ): CmBaseComponent<MergeProps<E, ExtraProps & Partial<VariantProps>>>
+  ): RcBaseComponent<MergeProps<E, ExtraProps & Partial<VariantProps>>>
 }
 
 /**
@@ -106,6 +111,58 @@ export interface ExtendTemplateBuilder<
  * @typeParam VariantProps - The props for the variants.
  * @typeParam ExtraProps - Additional props for the component.
  */
+type VariantsConfigBase<VariantProps, ExtraProps> =
+  | string
+  | ((
+      props: VariantProps &
+        ExtraProps & { style: (styleDef: StyleDefinition<VariantProps & ExtraProps>) => string },
+    ) => string)
+
+/**
+ * Type for the variants object in the variants configuration.
+ *
+ * The keys are the prop names, and the values are objects with class names or functions that return class names.
+ *
+ * @typeParam VariantProps - The props for the variants.
+ * @typeParam ExtraProps - Additional props for the component.
+ */
+type VariantsConfigVariants<VariantProps, ExtraProps> = {
+  [Key in keyof VariantProps]?: Record<
+    string,
+    | string
+    | ((
+        props: VariantProps &
+          ExtraProps & { style: (styleDef: StyleDefinition<VariantProps & ExtraProps>) => string },
+      ) => string)
+  >
+}
+
+/**
+ * Configuration object for creating styled components with variants.
+ *
+ * @typeParam VariantProps - The props for the variants.
+ * @typeParam ExtraProps - Additional props for the component.
+ */
+export type VariantsConfig<VariantProps extends object, ExtraProps extends object> = {
+  /**
+   * The base classes for the styled component.
+   * This can be a static string or a function that returns a string based on the component's props.
+   * If not provided, the base classes are empty.
+   */
+  base?: VariantsConfigBase<VariantProps, ExtraProps>
+  /**
+   * The variants object defines the classes for each prop value.
+   * The keys are the prop names, and the values are objects with class names or functions that return class names.
+   */
+  variants: VariantsConfigVariants<VariantProps, ExtraProps>
+  /**
+   * Default variants to apply if a variant prop is not passed.
+   * For example, if you have a variant `size` and a default variant value of `md`,
+   * it will use `md` if no explicit `size` prop is provided.
+   */
+  defaultVariants?: Partial<Record<keyof VariantProps, string>>
+}
+
 type VariantsFunction<K> =
   // this must stay here to get "rsc.div.variants" tooltipped in the IDE
   /**
@@ -123,8 +180,8 @@ type VariantsFunction<K> =
    *   $severity: "info" | "warning" | "error";
    * }
    *
-   * const Alert = cm.div.variants<AlertProps, AlertVariants>({
-   *   base: ({ $isActive }) => `${$isActive ? "pointer-cursor" : ""} p-4 rounded-md`,
+   * const Alert = rc.div.variants<AlertProps, AlertVariants>({
+   *   base: p => `${p.$isActive ? "pointer-cursor" : ""} p-4 rounded-md`,
    *   variants: {
    *     $severity: {
    *       info: (p) => `bg-blue-100 text-blue-800 ${p.$isActive ? "shadow-lg" : ""}`,
@@ -140,24 +197,24 @@ type VariantsFunction<K> =
    */
   <ExtraProps extends object, VariantProps extends object = ExtraProps>(
     config: VariantsConfig<VariantProps, ExtraProps>,
-  ) => CmBaseComponent<MergeProps<K, ExtraProps & Partial<VariantProps>>>
+  ) => RcBaseComponent<MergeProps<K, ExtraProps & Partial<VariantProps>>>
 
 /**
  * Factory for creating styled components with intrinsic elements.
  */
-export interface CmFactoryFunction<K extends CmIntrinsicElement> {
+export interface RcFactoryFunction<K extends keyof JSX.IntrinsicElements> {
   <T extends object>(
     strings: TemplateStringsArray,
     ...interpolations: Interpolation<T>[]
-  ): CmBaseComponent<MergeProps<K, T>>
+  ): RcBaseComponent<MergeProps<K, T>>
   logic<LogicProps extends object = object>(
     handler: LogicHandler<MergeProps<K, LogicProps>>,
-  ): CmFactoryFunction<K>
+  ): RcFactoryFunction<K>
   variants: VariantsFunction<K>
 }
 
-export type CmComponentFactory = {
-  [K in CmIntrinsicElement]: CmFactoryFunction<K>
+export type RcComponentFactory = {
+  [K in keyof JSX.IntrinsicElements]: RcFactoryFunction<K>
 } & {
   extend: ExtendFunction
 }
@@ -185,3 +242,16 @@ export type MergeProps<E, T> = E extends keyof JSX.IntrinsicElements
     : E extends JSXElementConstructor<infer P2>
       ? P2 & T
       : T
+
+// styles
+type StaticStyleValue = string | number
+type DynamicStyleValue<P> = (props: P) => StaticStyleValue
+
+// todo: document this
+export type StyleDefinition<P> = {
+  [Key in keyof CSSProperties]?: StaticStyleValue | DynamicStyleValue<P>
+}
+
+export type CmBaseComponent<P extends object = object> = RcBaseComponent<P>
+export type CmComponentFactory = RcComponentFactory
+export type CmFactoryFunction<K extends keyof JSX.IntrinsicElements> = RcFactoryFunction<K>

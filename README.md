@@ -1,6 +1,6 @@
 # @classmatejs
 
-Styled components for class names. For React and SolidJS or even framework agnostic.
+Styled components for class names. Today this repo ships the stable React and Solid adapters while the shared core/factory work remains on hold.
 
 ## 🚩 Transform this
 
@@ -37,7 +37,7 @@ const SomeButton = cm.button`
 `;
 ```
 
-*Very simplified examples—see the [@classmatejs/react README](packages/react/README.md) for many more features!*
+*Very simplified examples—see the package docs for many more features!*
 
 ## Features
 
@@ -54,9 +54,10 @@ const SomeButton = cm.button`
 
 Public Packages:
 
-- [`@classmatejs/react`](packages/react/README.md) — React adapter
-- [`@classmatejs/solid`](packages/solid/README.md) — SolidJs adapter
-- [`@classmatejs/factory`](packages/factory/README.md) — Framework agnostic factory
+- [`@classmatejs/react`](packages/react) — React adapter (actively maintained)
+- [`@classmatejs/solid`](packages/solid) — SolidJs adapter (actively maintained)
+
+> ⚠️ The shared `@classmatejs/core` runtime and the headless `@classmatejs/factory` package are muted for now while we iterate on a new architecture. They remain in the repo for archival purposes but are not part of the build or publish pipeline.
 
 ## Tailwind Merge
 

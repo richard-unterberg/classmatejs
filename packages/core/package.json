@@ -1,6 +1,6 @@
 {
   "name": "@classmatejs/core",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": true,
   "type": "module",
   "main": "./dist/index.cjs.js",
@@ -18,12 +18,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
-    "test": "echo \"TODO: test core\"",
+    "build": "echo \"@classmatejs/core is muted\"",
+    "test": "echo \"@classmatejs/core is muted\"",
     "clean": "rm -rf dist"
-  },
-  "devDependencies": {
-    "tsup": "^8.3.0",
-    "typescript": "^5.9.3"
   }
 }

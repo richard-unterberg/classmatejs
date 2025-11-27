@@ -1,10 +1,10 @@
-import { createComponent, sharedConfig, splitProps } from "solid-js"
+import type { Component, JSX } from "solid-js"
+import { sharedConfig, splitProps } from "solid-js"
 import { Dynamic } from "solid-js/web"
 import { twMerge } from "tailwind-merge"
 
-import { applyLogicHandlers } from "@classmatejs/core"
-
-import type { CmBaseComponent, LogicHandler, StyleDefinition } from "../types"
+import type { LogicHandler, ScBaseComponent, StyleDefinition } from "../types"
+import applyLogicHandlers from "./applyLogicHandlers"
 
 const toKebabCase = (key: string) => {
   if (key.startsWith("--")) {
@@ -57,8 +57,8 @@ const normalizeInlineStyle = (style: Record<string, any> | undefined | null) => 
   return normalized
 }
 
-interface CreateSolidElementParams<T extends object, Tag> {
-  tag: Tag
+interface CreateSolidElementParams<T extends object, E extends keyof JSX.IntrinsicElements | Component<any>> {
+  tag: E
   computeClassName: (props: T) => string
   displayName: string
   styles?: StyleDefinition<T> | ((props: T) => StyleDefinition<T>)
@@ -66,42 +66,160 @@ interface CreateSolidElementParams<T extends object, Tag> {
   logicHandlers?: LogicHandler<T>[]
 }
 
-const createSolidElement = <T extends object, Tag>({
+const isProductionEnv = typeof process !== "undefined" ? process.env?.NODE_ENV === "production" : false
+
+const shouldDebugHydration = () => {
+  if (typeof document === "undefined") {
+    return false
+  }
+  if (typeof process !== "undefined" && typeof process.env?.SOLID_CLASSMATE_DEBUG === "string") {
+    const flags = process.env.SOLID_CLASSMATE_DEBUG.split(",").map((flag) => flag.trim())
+    if (flags.includes("hydration")) {
+      return !isProductionEnv
+    }
+  }
+  const globalFlag = (() => {
+    if (typeof globalThis === "undefined") {
+      return false
+    }
+    const raw = (globalThis as Record<string, any>).__SOLID_CLASSMATE_DEBUG__
+    if (!raw) {
+      return false
+    }
+    if (raw === true) {
+      return true
+    }
+    if (typeof raw === "string") {
+      return raw
+        .split(",")
+        .map((flag) => flag.trim())
+        .includes("hydration")
+    }
+    if (typeof raw === "object" && raw !== null) {
+      return raw.hydration === true
+    }
+    return false
+  })()
+  return globalFlag
+}
+
+const logLibraryLoaded = () => {
+  if (isProductionEnv || typeof console === "undefined") {
+    return
+  }
+  if (!shouldDebugHydration()) {
+    return
+  }
+  const globalScope = typeof globalThis !== "undefined" ? (globalThis as Record<string, any>) : undefined
+  if (globalScope) {
+    if (globalScope.__SOLID_CLASSMATE_LOADED__) {
+      return
+    }
+    globalScope.__SOLID_CLASSMATE_LOADED__ = true
+  }
+  const envFlag = typeof process !== "undefined" ? process.env?.SOLID_CLASSMATE_DEBUG : undefined
+  const globalFlag =
+    globalScope && "__SOLID_CLASSMATE_DEBUG__" in globalScope
+      ? globalScope.__SOLID_CLASSMATE_DEBUG__
+      : undefined
+  // eslint-disable-next-line no-console
+  console.info(
+    `[solid-classmate] dev build instrumentation enabled (env: ${envFlag ?? "unset"}, global: ${
+      typeof globalFlag === "object" ? JSON.stringify(globalFlag) : String(globalFlag ?? "unset")
+    })`,
+  )
+}
+
+logLibraryLoaded()
+
+const logHydrationDebug = (componentName: string, props: Record<string, any>) => {
+  if (!shouldDebugHydration()) {
+    return
+  }
+  const context = sharedConfig.context
+  if (!context) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[solid-classmate] hydration debug: context missing for <${componentName}>. Props keys: ${Object.keys(props).join(", ")}`,
+    )
+    return
+  }
+  const descriptor = Object.getOwnPropertyDescriptor(props, "children")
+  const descriptorInfo = descriptor
+    ? {
+        hasGetter: typeof descriptor.get === "function",
+        hasSetter: typeof descriptor.set === "function",
+        isValue: "value" in descriptor,
+      }
+    : { missing: true }
+
+  // eslint-disable-next-line no-console
+  console.groupCollapsed(
+    `[solid-classmate] hydrating <${componentName}> (context: ${context.id}, depth: ${context.count})`,
+  )
+  // eslint-disable-next-line no-console
+  console.log("children descriptor", descriptorInfo)
+  // eslint-disable-next-line no-console
+  console.log("prop keys", Object.keys(props))
+  // eslint-disable-next-line no-console
+  console.trace()
+  // eslint-disable-next-line no-console
+  console.groupEnd()
+}
+
+const createSolidElement = <T extends object, E extends keyof JSX.IntrinsicElements | Component<any>>({
   tag,
   computeClassName,
   displayName,
   styles = {},
   propsToFilter = [],
   logicHandlers = [],
-}: CreateSolidElementParams<T, Tag>): CmBaseComponent<T> => {
+}: CreateSolidElementParams<T, E>): ScBaseComponent<T> => {
   const element = ((incomingProps: T) => {
     const enhancedProps =
       logicHandlers.length > 0 ? applyLogicHandlers(incomingProps, logicHandlers) : incomingProps
     const normalizedProps = enhancedProps as T & Record<string, any>
     const computedClassName = computeClassName(normalizedProps)
 
+    const normalizedRecord = normalizedProps as Record<string, any>
+    const omitKeysSource = normalizedRecord.__rcOmit
+    const omitKeys =
+      Array.isArray(omitKeysSource) && omitKeysSource.length > 0
+        ? new Set(
+            omitKeysSource.map((key) => {
+              if (typeof key === "string") {
+                return key
+              }
+              if (typeof key === "number") {
+                return String(key)
+              }
+              return String(key)
+            }),
+          )
+        : undefined
     const reservedKeys = [
       ...propsToFilter.filter((key): key is keyof T & string => typeof key === "string"),
       "children",
       "class",
       "className",
       "style",
+      "__rcOmit",
     ] as readonly string[]
-
-    const [local, forwardedSource] = splitProps(normalizedProps, reservedKeys)
+    const [local, forwardedSource] = splitProps(normalizedRecord, reservedKeys)
 
     const filteredProps: Record<string, any> = {}
     const forwarded = forwardedSource as Record<string, any>
     for (const key in forwarded) {
+      if (omitKeys?.has(key)) {
+        continue
+      }
       if (!key.startsWith("$")) {
         filteredProps[key] = forwarded[key]
       }
     }
 
-    const incomingClasses = [
-      typeof local.class === "string" ? local.class : "",
-      typeof local.className === "string" ? local.className : "",
-    ]
+    const initialClass = typeof local.class === "string" ? local.class : ""
+    const incomingClasses = [initialClass, typeof local.className === "string" ? local.className : ""]
       .filter(Boolean)
       .join(" ")
       .trim()
@@ -114,27 +232,23 @@ const createSolidElement = <T extends object, Tag>({
 
     const mergedClassName = twMerge(computedClassName, incomingClasses)
 
-    const dynamicProps = Object.create(filteredProps, {
-      component: { value: tag as any, enumerable: true },
-      class: { value: mergedClassName, enumerable: true },
-      style: { value: mergedStyles, enumerable: true },
-      children: {
-        get() {
-          return local.children
-        },
-        enumerable: !sharedConfig.context,
-      },
-    })
+    if (!isProductionEnv) {
+      logHydrationDebug(displayName, normalizedRecord)
+    }
 
-    return createComponent(Dynamic, dynamicProps)
-  }) as CmBaseComponent<T>
+    return (
+      <Dynamic component={tag as any} {...filteredProps} class={mergedClassName} style={mergedStyles}>
+        {local.children}
+      </Dynamic>
+    )
+  }) as ScBaseComponent<T>
 
-  element.displayName = displayName || "Cm Component"
-  element.__rcComputeClassName = (props: T) =>
+  element.displayName = displayName || "Sc Component"
+  element.__scComputeClassName = (props: T) =>
     computeClassName(logicHandlers.length > 0 ? applyLogicHandlers(props, logicHandlers) : props)
-  element.__rcStyles = styles
-  element.__rcTag = tag
-  element.__rcLogic = logicHandlers
+  element.__scStyles = styles
+  element.__scTag = tag
+  element.__scLogic = logicHandlers
 
   return element
 }
