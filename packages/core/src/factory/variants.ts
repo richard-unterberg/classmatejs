@@ -40,8 +40,25 @@ const createVariantsComponent = <
       styleDef: StyleDefinition<VariantProps & ExtraProps>,
     ) => string
 
-    const baseClasses =
-      typeof base === "function" ? base({ ...variantProps, style: styleForVariants }) : base || ""
+    let interpolationTarget:
+      | (VariantProps &
+          ExtraProps & { style: (styleDef: StyleDefinition<VariantProps & ExtraProps>) => string })
+      | undefined
+
+    const getInterpolationTarget = () => {
+      if (!interpolationTarget) {
+        interpolationTarget = Object.create(variantProps as object, {
+          style: {
+            value: styleForVariants,
+            enumerable: false,
+          },
+        }) as VariantProps &
+          ExtraProps & { style: (styleDef: StyleDefinition<VariantProps & ExtraProps>) => string }
+      }
+      return interpolationTarget
+    }
+
+    const baseClasses = typeof base === "function" ? base(getInterpolationTarget()) : base || ""
 
     const variantClasses = Object.entries(variants).map(([key, variantOptions]) => {
       const propValue =
@@ -65,10 +82,7 @@ const createVariantsComponent = <
         )[propValue] || ""
 
       if (typeof option === "function") {
-        return option({
-          ...variantProps,
-          style: styleForVariants,
-        })
+        return option(getInterpolationTarget())
       }
       return option
     })

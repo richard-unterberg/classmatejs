@@ -1,4 +1,4 @@
-import { createComponent, splitProps } from "solid-js"
+import { createComponent, sharedConfig, splitProps } from "solid-js"
 import { Dynamic } from "solid-js/web"
 import { twMerge } from "tailwind-merge"
 
@@ -114,15 +114,17 @@ const createSolidElement = <T extends object, Tag>({
 
     const mergedClassName = twMerge(computedClassName, incomingClasses)
 
-    const dynamicProps = {
-      component: tag as any,
-      ...filteredProps,
-      class: mergedClassName,
-      style: mergedStyles,
-      get children() {
-        return local.children
+    const dynamicProps = Object.create(filteredProps, {
+      component: { value: tag as any, enumerable: true },
+      class: { value: mergedClassName, enumerable: true },
+      style: { value: mergedStyles, enumerable: true },
+      children: {
+        get() {
+          return local.children
+        },
+        enumerable: !sharedConfig.context,
       },
-    }
+    })
 
     return createComponent(Dynamic, dynamicProps)
   }) as CmBaseComponent<T>

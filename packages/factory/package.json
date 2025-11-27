@@ -1,7 +1,7 @@
 {
   "name": "@classmatejs/factory",
   "description": "Headless classmate factory to compute class names and variants without rendering components.",
-  "version": "0.0.2",
+  "version": "0.0.4b",
   "keywords": [
     "classmate",
     "headless",
@@ -28,9 +28,11 @@
   },
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "require": "./dist/index.cjs.js",
       "import": "./dist/index.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "repository": {
     "type": "git",

@@ -1,24 +1,20 @@
 import { twMerge } from "tailwind-merge"
 
+import type { StyleDefinition } from "@classmatejs/core"
 import type { CfBaseComponent } from "../types"
-
-import type { LogicHandler, StyleDefinition } from "@classmatejs/core"
 
 interface CreateClassProcessorParams<P extends object, Tag> {
   tag: Tag
   computeClassName: (props: P) => string
   displayName: string
   styles?: StyleDefinition<P> | ((props: P) => StyleDefinition<P>)
-  propsToFilter?: (keyof P)[]
-  logicHandlers?: LogicHandler<P>[]
+  logicHandlers?: unknown
 }
 
 const createClassProcessor = <P extends object, Tag>({
   tag,
   computeClassName,
   displayName,
-  styles,
-  logicHandlers,
 }: CreateClassProcessorParams<P, Tag>): CfBaseComponent<P> => {
   const processor = ((props?: P) => {
     const incomingProps = props ? { ...props } : ({} as P)

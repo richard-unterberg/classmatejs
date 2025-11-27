@@ -7,6 +7,17 @@ import type {
   VariantsConfig,
 } from "../types"
 
+const createInterpolationTarget = <Target extends object>(
+  props: Target,
+  styleFactory: (styleDef: StyleDefinition<Target>) => string,
+) =>
+  Object.create(props as object, {
+    style: {
+      value: styleFactory,
+      enumerable: false,
+    },
+  }) as Target & { style: (styleDef: StyleDefinition<Target>) => string }
+
 const createExtendedComponent = <BaseProps extends object, P extends object, Tag>(
   baseComponent: RuntimeComponent<BaseProps>,
   strings: TemplateStringsArray,
@@ -27,16 +38,34 @@ const createExtendedComponent = <BaseProps extends object, P extends object, Tag
       return ""
     }
 
-    const baseClassName = baseComputeClassName({
-      ...(props as unknown as BaseProps),
-      style: styleUtility as unknown as (styleDef: StyleDefinition<BaseProps>) => string,
-    } as BaseProps & { style: (styleDef: StyleDefinition<BaseProps>) => string })
+    let extendedInterpolationTarget: (P & { style: (styleDef: StyleDefinition<P>) => string }) | undefined
+    const getExtendedInterpolationTarget = () => {
+      if (!extendedInterpolationTarget) {
+        extendedInterpolationTarget = createInterpolationTarget(props, styleUtility)
+      }
+      return extendedInterpolationTarget
+    }
+
+    let baseInterpolationTarget:
+      | (BaseProps & { style: (styleDef: StyleDefinition<BaseProps>) => string })
+      | undefined
+    const getBaseInterpolationTarget = () => {
+      if (!baseInterpolationTarget) {
+        baseInterpolationTarget = createInterpolationTarget(
+          props as unknown as BaseProps,
+          styleUtility as unknown as (styleDef: StyleDefinition<BaseProps>) => string,
+        )
+      }
+      return baseInterpolationTarget
+    }
+
+    const baseClassName = baseComputeClassName(getBaseInterpolationTarget())
 
     const extendedClassName = strings
       .map((str, i) => {
         const interp = interpolations[i]
         if (typeof interp === "function") {
-          return str + interp({ ...props, style: styleUtility })
+          return str + interp(getExtendedInterpolationTarget())
         }
         return str + (interp ?? "")
       })
@@ -77,7 +106,19 @@ const computeVariantClasses = <VariantProps extends object, ExtraProps extends o
 ) => {
   const { base, variants, defaultVariants = {} } = config
 
-  const baseClasses = typeof base === "function" ? base({ ...props, style: styleFactory }) : base ? base : ""
+  let interpolationTarget:
+    | (VariantProps &
+        ExtraProps & { style: (styleDef: StyleDefinition<VariantProps & ExtraProps>) => string })
+    | undefined
+
+  const getInterpolationTarget = () => {
+    if (!interpolationTarget) {
+      interpolationTarget = createInterpolationTarget(props, styleFactory)
+    }
+    return interpolationTarget
+  }
+
+  const baseClasses = typeof base === "function" ? base(getInterpolationTarget()) : base ? base : ""
 
   const variantClasses = Object.entries(variants).map(([key, variantOptions]) => {
     const propValue = (props as Record<string, string | undefined>)[key]
@@ -91,7 +132,7 @@ const computeVariantClasses = <VariantProps extends object, ExtraProps extends o
     const option = (variantOptions as Record<string, any>)[resolvedValue]
 
     if (typeof option === "function") {
-      return option({ ...props, style: styleFactory })
+      return option(getInterpolationTarget())
     }
 
     return option || ""
@@ -131,10 +172,20 @@ const createExtendedVariantsComponent = <
       styleDef: StyleDefinition<VariantProps & ExtraProps>,
     ) => string
 
-    const baseClassName = baseComputeClassName({
-      ...(props as unknown as BaseProps),
-      style: styleUtility as unknown as (styleDef: StyleDefinition<BaseProps>) => string,
-    } as BaseProps & { style: (styleDef: StyleDefinition<BaseProps>) => string })
+    let baseInterpolationTarget:
+      | (BaseProps & { style: (styleDef: StyleDefinition<BaseProps>) => string })
+      | undefined
+    const getBaseInterpolationTarget = () => {
+      if (!baseInterpolationTarget) {
+        baseInterpolationTarget = createInterpolationTarget(
+          props as unknown as BaseProps,
+          styleUtility as unknown as (styleDef: StyleDefinition<BaseProps>) => string,
+        )
+      }
+      return baseInterpolationTarget
+    }
+
+    const baseClassName = baseComputeClassName(getBaseInterpolationTarget())
 
     const variantClassName = computeVariantClasses(config, variantProps, styleForVariants)
 
