@@ -17,8 +17,6 @@ export default defineConfig({
   },
   esbuildOptions(options, context) {
     options.charset = "utf8"
-    options.jsx = "automatic"
-    options.jsxImportSource = "solid-js"
     if (!options.footer) {
       options.footer = {}
     }

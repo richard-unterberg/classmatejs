@@ -1,5 +1,5 @@
+import { createComponent, sharedConfig, splitProps } from "solid-js"
 import type { Component, JSX } from "solid-js"
-import { sharedConfig, splitProps } from "solid-js"
 import { Dynamic } from "solid-js/web"
 import { twMerge } from "tailwind-merge"
 
@@ -236,11 +236,15 @@ const createSolidElement = <T extends object, E extends keyof JSX.IntrinsicEleme
       logHydrationDebug(displayName, normalizedRecord)
     }
 
-    return (
-      <Dynamic component={tag as any} {...filteredProps} class={mergedClassName} style={mergedStyles}>
-        {local.children}
-      </Dynamic>
-    )
+    return createComponent(Dynamic, {
+      component: tag as any,
+      ...filteredProps,
+      class: mergedClassName,
+      style: mergedStyles,
+      get children() {
+        return local.children
+      },
+    })
   }) as CmBaseComponent<T>
 
   element.displayName = displayName || "Cm Component"
