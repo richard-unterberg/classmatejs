@@ -1,7 +1,7 @@
 {
   "name": "@classmatejs/react",
   "description": "A react tool to separate class name logic, create variants and manage styles.",
-  "version": "0.0.4b",
+  "version": "0.0.4",
   "keywords": [
     "react",
     "classmate",

@@ -1,6 +1,6 @@
 {
   "name": "@classmatejs/core",
-  "version": "0.0.4b",
+  "version": "0.0.4",
   "private": true,
   "type": "module",
   "main": "./dist/index.cjs.js",
