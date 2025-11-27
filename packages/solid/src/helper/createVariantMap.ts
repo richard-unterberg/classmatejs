@@ -1,5 +1,5 @@
 import cm from "../cm"
-import type { ScBaseComponent, VariantsConfig } from "../types"
+import type { CmBaseComponent, VariantsConfig } from "../types"
 import type { AllowedTags } from "../util/domElements"
 
 interface CreateVariantMapOptions<T extends AllowedTags> {
@@ -36,14 +36,14 @@ const hVariantMap = createVariantMap({
  * will result in:
  * ```tsx
  * const button = {
- *  button: ScBaseComponent<any>, // sc.button.variants(buttonVariants)
- *  a: ScBaseComponent<any>, // sc.a.variants(buttonVariants)
+ *  button: CmBaseComponent<any>, // sc.button.variants(buttonVariants)
+ *  a: CmBaseComponent<any>, // sc.a.variants(buttonVariants)
  * }
  */
 const createVariantMap = <T extends AllowedTags>({
   elements,
   variantsConfig,
-}: CreateVariantMapOptions<T>): Record<T, ScBaseComponent<any>> => {
+}: CreateVariantMapOptions<T>): Record<T, CmBaseComponent<any>> => {
   // Check for duplicates
   const uniqueElements = new Set(elements)
   if (uniqueElements.size !== elements.length) {
@@ -70,7 +70,7 @@ const createVariantMap = <T extends AllowedTags>({
       }
       return acc
     },
-    {} as Record<T, ScBaseComponent<any>>,
+    {} as Record<T, CmBaseComponent<any>>,
   )
 }
 

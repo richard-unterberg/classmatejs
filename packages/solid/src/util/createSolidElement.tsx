@@ -3,7 +3,7 @@ import { sharedConfig, splitProps } from "solid-js"
 import { Dynamic } from "solid-js/web"
 import { twMerge } from "tailwind-merge"
 
-import type { LogicHandler, ScBaseComponent, StyleDefinition } from "../types"
+import type { CmBaseComponent, LogicHandler, StyleDefinition } from "../types"
 import applyLogicHandlers from "./applyLogicHandlers"
 
 const toKebabCase = (key: string) => {
@@ -174,7 +174,7 @@ const createSolidElement = <T extends object, E extends keyof JSX.IntrinsicEleme
   styles = {},
   propsToFilter = [],
   logicHandlers = [],
-}: CreateSolidElementParams<T, E>): ScBaseComponent<T> => {
+}: CreateSolidElementParams<T, E>): CmBaseComponent<T> => {
   const element = ((incomingProps: T) => {
     const enhancedProps =
       logicHandlers.length > 0 ? applyLogicHandlers(incomingProps, logicHandlers) : incomingProps
@@ -241,9 +241,9 @@ const createSolidElement = <T extends object, E extends keyof JSX.IntrinsicEleme
         {local.children}
       </Dynamic>
     )
-  }) as ScBaseComponent<T>
+  }) as CmBaseComponent<T>
 
-  element.displayName = displayName || "Sc Component"
+  element.displayName = displayName || "Cm Component"
   element.__scComputeClassName = (props: T) =>
     computeClassName(logicHandlers.length > 0 ? applyLogicHandlers(props, logicHandlers) : props)
   element.__scStyles = styles

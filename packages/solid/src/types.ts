@@ -15,14 +15,14 @@ export type Interpolation<T> = InterpolationBase<T & { style: (styleDef: StyleDe
 
 export type LogicHandler<P extends object> = (props: P) => Partial<P> | undefined
 
-export type InputComponent = Component<any> | ScBaseComponent<any>
+export type InputComponent = Component<any> | CmBaseComponent<any>
 
 /**
  * Base type for styled React components with forward refs.
  *
  * @typeParam P - Props of the component.
  */
-export interface ScBaseComponent<P extends object = object> extends Component<P> {
+export interface CmBaseComponent<P extends object = object> extends Component<P> {
   displayName?: string
   __scComputeClassName?: (props: P) => string
   __scTag?: keyof JSX.IntrinsicElements | Component<any>
@@ -84,13 +84,13 @@ export interface ExtendTemplateBuilder<
   <T extends object>(
     strings: TemplateStringsArray,
     ...interpolations: Interpolation<MergeProps<E, T> & JSX.IntrinsicElements[I]>[]
-  ): ScBaseComponent<MergeProps<E, T>>
+  ): CmBaseComponent<MergeProps<E, T>>
   logic<NextLogic extends object = object>(
     handler: LogicHandler<MergeProps<E, LogicProps & NextLogic>>,
   ): ExtendTemplateBuilder<E, I, LogicProps & NextLogic>
   variants<ExtraProps extends object, VariantProps extends object = ExtraProps>(
     config: VariantsConfig<VariantProps, ExtraProps>,
-  ): ScBaseComponent<MergeProps<E, ExtraProps & Partial<VariantProps>>>
+  ): CmBaseComponent<MergeProps<E, ExtraProps & Partial<VariantProps>>>
 }
 
 /**
@@ -187,24 +187,24 @@ type VariantsFunction<K> =
    */
   <ExtraProps extends object, VariantProps extends object = ExtraProps>(
     config: VariantsConfig<VariantProps, ExtraProps>,
-  ) => ScBaseComponent<MergeProps<K, ExtraProps & Partial<VariantProps>>>
+  ) => CmBaseComponent<MergeProps<K, ExtraProps & Partial<VariantProps>>>
 
 /**
  * Factory for creating styled components with intrinsic elements.
  */
-export interface ScFactoryFunction<K extends keyof JSX.IntrinsicElements> {
+export interface CmFactoryFunction<K extends keyof JSX.IntrinsicElements> {
   <T extends object>(
     strings: TemplateStringsArray,
     ...interpolations: Interpolation<T>[]
-  ): ScBaseComponent<MergeProps<K, T>>
+  ): CmBaseComponent<MergeProps<K, T>>
   logic<LogicProps extends object = object>(
     handler: LogicHandler<MergeProps<K, LogicProps>>,
-  ): ScFactoryFunction<K>
+  ): CmFactoryFunction<K>
   variants: VariantsFunction<K>
 }
 
-export type ScComponentFactory = {
-  [K in keyof JSX.IntrinsicElements]: ScFactoryFunction<K>
+export type CmComponentFactory = {
+  [K in keyof JSX.IntrinsicElements]: CmFactoryFunction<K>
 } & {
   extend: ExtendFunction
 }
@@ -238,6 +238,6 @@ export type StyleDefinition<P> = {
   [Key in keyof JSX.CSSProperties]?: StaticStyleValue | DynamicStyleValue<P>
 }
 
-export type CmBaseComponent<P extends object = object> = ScBaseComponent<P>
-export type CmComponentFactory = ScComponentFactory
-export type CmFactoryFunction<K extends keyof JSX.IntrinsicElements> = ScFactoryFunction<K>
+export type ScBaseComponent<P extends object = object> = CmBaseComponent<P>
+export type ScComponentFactory = CmComponentFactory
+export type ScFactoryFunction<K extends keyof JSX.IntrinsicElements> = CmFactoryFunction<K>

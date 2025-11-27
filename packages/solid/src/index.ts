@@ -2,7 +2,7 @@ import { twMerge } from "tailwind-merge"
 import cmInit from "./cm"
 import convertCmProps from "./helper/convertCmProps"
 import createVariantMap from "./helper/createVariantMap"
-import type { ScComponentFactory } from "./types"
+import type { CmComponentFactory } from "./types"
 
 /**
  * The `cm` instance is the main entry point for creating our classmate-components.
@@ -52,8 +52,9 @@ import type { ScComponentFactory } from "./types"
  * })
  * ```
  */
-const cm = cmInit as ScComponentFactory
+const cm = cmInit as CmComponentFactory
 
+export type { CmBaseComponent } from "./types"
 export type { ScBaseComponent } from "./types"
 export type { VariantsConfig } from "./types"
 

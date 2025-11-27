@@ -1,10 +1,10 @@
 import { mergeProps } from "solid-js"
 import type { JSX } from "solid-js"
 import type {
+  CmBaseComponent,
   InputComponent,
   LogicHandler,
   MergeProps,
-  ScBaseComponent,
   StyleDefinition,
   VariantsConfig,
 } from "../types"
@@ -25,7 +25,7 @@ const createVariantsComponent = <
   tag: E,
   config: VariantsConfig<VariantProps, ExtraProps>,
   options: CreateVariantsOptions<MergeProps<E, ExtraProps & Partial<VariantProps>>> = {},
-): ScBaseComponent<MergeProps<E, ExtraProps & Partial<VariantProps>>> => {
+): CmBaseComponent<MergeProps<E, ExtraProps & Partial<VariantProps>>> => {
   const { base, variants, defaultVariants = {} } = config
   const propsToFilter = Object.keys(variants)
   const styles: Record<string, string | number> = {}
@@ -78,7 +78,7 @@ const createVariantsComponent = <
     styles,
     propsToFilter,
     logicHandlers,
-  }) as ScBaseComponent<MergeProps<E, Partial<VariantProps> & ExtraProps>>
+  }) as CmBaseComponent<MergeProps<E, Partial<VariantProps> & ExtraProps>>
 }
 
 export default createVariantsComponent

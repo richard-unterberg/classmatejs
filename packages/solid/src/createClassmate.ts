@@ -1,4 +1,4 @@
-import type { ScBaseComponent } from "./types"
+import type { CmBaseComponent } from "./types"
 
 /**
  * Instantiates a classmate component factory inside a Solid component or scope.
@@ -7,8 +7,8 @@ import type { ScBaseComponent } from "./types"
  * incoming factory and returns the generated component.
  */
 const createClassmate = <Props extends object>(
-  factory: () => ScBaseComponent<Props>,
-): ScBaseComponent<Props> => {
+  factory: () => CmBaseComponent<Props>,
+): CmBaseComponent<Props> => {
   return factory()
 }
 

@@ -1,6 +1,6 @@
 import { type DependencyList, useMemo } from "react"
 
-import type { RcBaseComponent } from "./types"
+import type { CmBaseComponent } from "./types"
 
 /**
  * Memoizes a classmate component factory within a React component.
@@ -31,9 +31,9 @@ import type { RcBaseComponent } from "./types"
  * ```
  */
 const useClassmate = <Props extends object>(
-  factory: () => RcBaseComponent<Props>,
+  factory: () => CmBaseComponent<Props>,
   deps: DependencyList = [],
-): RcBaseComponent<Props> => {
+): CmBaseComponent<Props> => {
   return useMemo(factory, deps)
 }
 

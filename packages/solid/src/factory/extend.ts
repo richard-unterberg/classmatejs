@@ -1,6 +1,6 @@
 import { mergeProps } from "solid-js"
 
-import type { Interpolation, LogicHandler, ScBaseComponent, StyleDefinition, VariantsConfig } from "../types"
+import type { CmBaseComponent, Interpolation, LogicHandler, StyleDefinition, VariantsConfig } from "../types"
 import createSolidElement from "../util/createSolidElement"
 
 /**
@@ -14,11 +14,11 @@ import createSolidElement from "../util/createSolidElement"
  * @returns A new styled component with merged class names and styles.
  */
 const createExtendedComponent = <T extends object>(
-  baseComponent: ScBaseComponent<any>,
+  baseComponent: CmBaseComponent<any>,
   strings: TemplateStringsArray,
   interpolations: Interpolation<T>[],
   logicHandlers: LogicHandler<T>[] = [],
-): ScBaseComponent<T> => {
+): CmBaseComponent<T> => {
   const displayName = `Extended(${baseComponent.displayName || "Component"})`
   const baseComputeClassName = baseComponent.__scComputeClassName || (() => "")
   const baseStyles = baseComponent.__scStyles || {}
@@ -110,10 +110,10 @@ const createExtendedVariantsComponent = <
   VariantProps extends object,
   ComponentProps extends object = ExtraProps & Partial<VariantProps>,
 >(
-  baseComponent: ScBaseComponent<any>,
+  baseComponent: CmBaseComponent<any>,
   config: VariantsConfig<VariantProps, ExtraProps>,
   logicHandlers: LogicHandler<ComponentProps>[] = [],
-): ScBaseComponent<ComponentProps> => {
+): CmBaseComponent<ComponentProps> => {
   const displayName = `ExtendedVariants(${baseComponent.displayName || "Component"})`
   const baseComputeClassName = baseComponent.__scComputeClassName || (() => "")
   const baseStyles = baseComponent.__scStyles || {}

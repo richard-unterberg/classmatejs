@@ -1,5 +1,5 @@
 import type { JSX } from "react"
-import type { Interpolation, LogicHandler, MergeProps, RcBaseComponent, StyleDefinition } from "../types"
+import type { CmBaseComponent, Interpolation, LogicHandler, MergeProps, StyleDefinition } from "../types"
 import createReactElement from "../util/createReactElement"
 
 interface CreateBaseComponentOptions<T extends object> {
@@ -20,7 +20,7 @@ const createBaseComponent = <T extends object, E extends keyof JSX.IntrinsicElem
   strings: TemplateStringsArray,
   interpolations: Interpolation<T>[],
   options: CreateBaseComponentOptions<MergeProps<E, T>> = {},
-): RcBaseComponent<MergeProps<E, T>> => {
+): CmBaseComponent<MergeProps<E, T>> => {
   const styles: Record<string, string | number> = {}
   const displayName = `Styled(${typeof tag === "string" ? tag : "Component"})`
   const logicHandlers = options.logic ?? []

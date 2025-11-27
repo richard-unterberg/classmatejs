@@ -1,6 +1,6 @@
 # @classmatejs
 
-Styled components for class names. Today this repo ships the stable React and Solid adapters while the shared core/factory work remains on hold.
+Styled components for class names. For React and SolidJS.
 
 ## 🚩 Transform this
 
@@ -67,6 +67,10 @@ can use it to override classes.
 
 ## Upcoming
 
+- core package rework and publish
+- SolidJS package rework and publish
+- More adapters (Vue, Svelte, etc)
+- More examples and recipes in the docs
 - Advanced IDE integration
   - show generated default class on hover
   - enforce autocompletion and tooltips from the used libs

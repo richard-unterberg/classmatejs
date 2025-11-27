@@ -1,4 +1,4 @@
-import type { Interpolation, LogicHandler, RcBaseComponent, StyleDefinition, VariantsConfig } from "../types"
+import type { CmBaseComponent, Interpolation, LogicHandler, StyleDefinition, VariantsConfig } from "../types"
 import createReactElement from "../util/createReactElement"
 
 /**
@@ -12,11 +12,11 @@ import createReactElement from "../util/createReactElement"
  * @returns A new styled component with merged class names and styles.
  */
 const createExtendedComponent = <T extends object>(
-  baseComponent: RcBaseComponent<any>,
+  baseComponent: CmBaseComponent<any>,
   strings: TemplateStringsArray,
   interpolations: Interpolation<T>[],
   logicHandlers: LogicHandler<T>[] = [],
-): RcBaseComponent<T> => {
+): CmBaseComponent<T> => {
   const displayName = `Extended(${baseComponent.displayName || "Component"})`
   const baseComputeClassName = baseComponent.__rcComputeClassName || (() => "")
   const baseStyles = baseComponent.__rcStyles || {}
@@ -102,10 +102,10 @@ const createExtendedVariantsComponent = <
   VariantProps extends object,
   ComponentProps extends object = ExtraProps & Partial<VariantProps>,
 >(
-  baseComponent: RcBaseComponent<any>,
+  baseComponent: CmBaseComponent<any>,
   config: VariantsConfig<VariantProps, ExtraProps>,
   logicHandlers: LogicHandler<ComponentProps>[] = [],
-): RcBaseComponent<ComponentProps> => {
+): CmBaseComponent<ComponentProps> => {
   const displayName = `ExtendedVariants(${baseComponent.displayName || "Component"})`
   const baseComputeClassName = baseComponent.__rcComputeClassName || (() => "")
   const baseStyles = baseComponent.__rcStyles || {}
