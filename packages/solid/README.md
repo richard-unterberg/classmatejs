@@ -104,10 +104,8 @@ interface ButtonProps {
 const SomeButton = cm.button<ButtonProps>`
   text-lg
   mt-5
-  ${(
-  p,
-) => (p.$isActive ? "bg-blue-400 text-white" : "bg-blue-400 text-blue-200")}
-  ${(p) => (p.$isLoading ? "opacity-90 pointer-events-none" : "")}
+  ${({ $isActive }) => ($isActive ? "bg-blue-400 text-white" : "bg-blue-400 text-blue-200")}
+  ${({ $isLoading }) => ($isLoading ? "opacity-90 pointer-events-none" : "")}
 `;
 // transforms to <button className="text-lg mt-5 bg-blue-400 text-white opacity-90 pointer-events-none" />
 ```
@@ -135,17 +133,16 @@ const Alert = cm.div.variants<AlertProps>({
   // optional
   base: (p) => `
     ${p.isActive ? "custom-active" : "custom-inactive"}
-    p-4
-    rounded-md
+    p-4 rounded-md
   `,
   // required
   variants: {
     $severity: {
       warning: "bg-yellow-100 text-yellow-800",
-      info: (p) =>
-        `bg-blue-100 text-blue-800 ${p.$isActive ? "shadow-lg" : ""}`,
-      error: (p) =>
-        `bg-red-100 text-red-800 ${p.$isActive ? "ring ring-red-500" : ""}`,
+      info: ({ $isActive }) =>
+        `bg-blue-100 text-blue-800 ${ $isActive ? "shadow-lg" : ""}`,
+      error: ({ $isActive }) =>
+        `bg-red-100 text-red-800 ${ $isActive ? "ring ring-red-500" : ""}`,
     },
   },
   // optional - used if no variant was found
