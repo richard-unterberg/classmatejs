@@ -47,10 +47,6 @@ const SomeButton = cm.button`
 - Tested with SSR Frameworks
 - Classname merging
 
-## New Documentation online!
-
-#### [Head over to the new docs page](https://react-classmate.dev/)
-
 ## Contents
 
 - [Features](#features)
@@ -93,9 +89,6 @@ const Container = cm.div`
 `;
 // transforms to: <div className="py-2 px-5 min-h-24" />
 ```
-
-Additional Information:
-[See "Base usage" documentation](https://react-classmate.dev/docs/basic/)
 
 ### Use with props
 
@@ -165,9 +158,6 @@ export default () => <Alert $severity="info" $isActive />;
 // outputs: <div className="custom-active p-4 rounded-md bg-blue-100 text-blue-800 shadow-lg" />
 ```
 
-Additional Information:
-[See "Variants" documentation](https://react-classmate.dev/docs/variants/)
-
 ### Typescript: Separate base props and variants with a second type parameter
 
 As seen above, we also pass `AlertProps` to the variants, which can cause loose
@@ -217,9 +207,6 @@ const Container = cm.extend(MyOtherComponent)`
 `;
 // transforms to: <button className="text-lg mt-5 py-2 px-5 min-h-24" />
 ```
-
-Additional Information:
-["Extend" documentation](https://react-classmate.dev/docs/extend/)
 
 ## Add CSS Styles
 
