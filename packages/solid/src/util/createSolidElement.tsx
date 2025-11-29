@@ -176,12 +176,23 @@ const createSolidElement = <T extends object, E extends keyof JSX.IntrinsicEleme
   logicHandlers = [],
 }: CreateSolidElementParams<T, E>): CmBaseComponent<T> => {
   const element = ((incomingProps: T) => {
-    const enhancedProps =
+    const normalizedPropsBase =
       logicHandlers.length > 0 ? applyLogicHandlers(incomingProps, logicHandlers) : incomingProps
-    const normalizedProps = enhancedProps as T & Record<string, any>
-    const computedClassName = computeClassName(normalizedProps)
+    const normalizedProps = normalizedPropsBase as T & Record<string, any>
 
     const normalizedRecord = normalizedProps as Record<string, any>
+    const reservedKeys = [
+      ...propsToFilter.filter((key): key is keyof T & string => typeof key === "string"),
+      "children",
+      "class",
+      "className",
+      "style",
+      "__rcOmit",
+    ] as readonly string[]
+    const [local, forwardedSource] = splitProps(normalizedRecord, reservedKeys)
+
+    const filteredProps: Record<string, any> = {}
+    const forwarded = forwardedSource as Record<string, any>
     const omitKeysSource = normalizedRecord.__rcOmit
     const omitKeys =
       Array.isArray(omitKeysSource) && omitKeysSource.length > 0
@@ -197,18 +208,7 @@ const createSolidElement = <T extends object, E extends keyof JSX.IntrinsicEleme
             }),
           )
         : undefined
-    const reservedKeys = [
-      ...propsToFilter.filter((key): key is keyof T & string => typeof key === "string"),
-      "children",
-      "class",
-      "className",
-      "style",
-      "__rcOmit",
-    ] as readonly string[]
-    const [local, forwardedSource] = splitProps(normalizedRecord, reservedKeys)
 
-    const filteredProps: Record<string, any> = {}
-    const forwarded = forwardedSource as Record<string, any>
     for (const key in forwarded) {
       if (omitKeys?.has(key)) {
         continue
@@ -218,20 +218,6 @@ const createSolidElement = <T extends object, E extends keyof JSX.IntrinsicEleme
       }
     }
 
-    const initialClass = typeof local.class === "string" ? local.class : ""
-    const incomingClasses = [initialClass, typeof local.className === "string" ? local.className : ""]
-      .filter(Boolean)
-      .join(" ")
-      .trim()
-
-    const dynamicStylesSource = typeof styles === "function" ? styles(normalizedProps) : styles
-    const dynamicStyles = resolveStyleDefinition(dynamicStylesSource, normalizedProps)
-    const localStyleSource = typeof local.style === "object" && local.style !== null ? local.style : undefined
-    const localStyles = normalizeInlineStyle(localStyleSource)
-    const mergedStyles = { ...dynamicStyles, ...localStyles }
-
-    const mergedClassName = twMerge(computedClassName, incomingClasses)
-
     if (!isProductionEnv) {
       logHydrationDebug(displayName, normalizedRecord)
     }
@@ -239,8 +225,24 @@ const createSolidElement = <T extends object, E extends keyof JSX.IntrinsicEleme
     return createComponent(Dynamic, {
       component: tag as any,
       ...filteredProps,
-      class: mergedClassName,
-      style: mergedStyles,
+      get class() {
+        const computedClassName = computeClassName(normalizedProps)
+        const initialClass = typeof local.class === "string" ? local.class : ""
+        const incomingClasses = [initialClass, typeof local.className === "string" ? local.className : ""]
+          .filter(Boolean)
+          .join(" ")
+          .trim()
+
+        return twMerge(computedClassName, incomingClasses)
+      },
+      get style() {
+        const dynamicStylesSource = typeof styles === "function" ? styles(normalizedProps) : styles
+        const dynamicStyles = resolveStyleDefinition(dynamicStylesSource, normalizedProps)
+        const localStyleSource =
+          typeof local.style === "object" && local.style !== null ? local.style : undefined
+        const localStyles = normalizeInlineStyle(localStyleSource)
+        return { ...dynamicStyles, ...localStyles }
+      },
       get children() {
         return local.children
       },
