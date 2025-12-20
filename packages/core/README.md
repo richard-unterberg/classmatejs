@@ -1,3 +1,5 @@
+> ⚠️ The shared `@classmatejs/core` runtime and the headless `@classmatejs/factory` package are muted for now while we iterate on a new architecture. They remain in the repo for archival purposes but are not part of the build or publish pipeline.
+
 # @classmatejs/core
 
 Shared logic that powers every Classmate adapter. The package ships the DOM metadata, runtime factories (`createBaseComponent`, `createExtendedComponent`, `createVariantsComponent`), and helper utilities consumed by `@classmatejs/react`, `@classmatejs/solid`, and future runtimes.
