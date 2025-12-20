@@ -6,15 +6,16 @@ A tool for managing React component class names, variants and styles.
 
 ```jsx
 const SomeButton = ({ isLoading, ...props }) => {
-  const activeClass = isLoading
+  const activeClass = createMemo(() => isLoading
     ? "bg-blue-400 text-white"
     : "bg-blue-800 text-blue-200";
+  )
 
   return (
     <button
       {...props}
-      className={`transition-all mt-5 border-1 md:text-lg text-normal ${someConfig.transitionDurationEaseClass} ${activeClass} ${
-        props.className || ""
+      class={`transition-all mt-5 border-1 md:text-lg text-normal ${someConfig.transitionDurationEaseClass} ${activeClass} ${
+        props.class || ""
       }`}
     >
       {props.children}
@@ -69,9 +70,9 @@ Make sure you have installed [SolidJS](https://www.solidjs.com/) (> 1.8.0) in
 your project.
 
 ```bash
-npm i solid-classmate
+npm i @classmatejs/solid
 # or
-yarn add solid-classmate
+yarn add @classmatejs/solid
 ```
 
 ## Basic
