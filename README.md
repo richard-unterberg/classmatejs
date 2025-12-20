@@ -54,10 +54,8 @@ const SomeButton = cm.button`
 
 Public Packages:
 
-- [`@classmatejs/react`](packages/react) — React adapter (actively maintained)
-- [`@classmatejs/solid`](packages/solid) — SolidJs adapter (actively maintained)
-
-> ⚠️ The shared `@classmatejs/core` runtime and the headless `@classmatejs/factory` package are muted for now while we iterate on a new architecture. They remain in the repo for archival purposes but are not part of the build or publish pipeline.
+- [`@classmatejs/react`](packages/react) — React adapter 
+- [`@classmatejs/solid`](packages/solid) — SolidJs adapter 
 
 ## Tailwind Merge
 
