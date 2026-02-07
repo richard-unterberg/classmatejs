@@ -31,6 +31,35 @@ describe("cm variants (solid)", () => {
     expect(container.firstChild).not.toHaveAttribute("$isActive")
     expect(container.firstChild).toBeInstanceOf(HTMLDivElement)
   })
+
+  it("supports boolean variants with default values", () => {
+    interface ToolBlockProps {
+      $isEmpty?: boolean
+    }
+
+    const ToolBlock = cm.div.variants<ToolBlockProps>({
+      base: "flex flex-wrap gap-2",
+      variants: {
+        $isEmpty: {
+          true: "bg-base-100",
+          false: "bg-base-200",
+        },
+      },
+      defaultVariants: {
+        $isEmpty: false,
+      },
+    })
+
+    const { container } = render(() => <ToolBlock $isEmpty />)
+    expect(container.firstChild).toHaveClass("flex flex-wrap gap-2 bg-base-100")
+    expect(container.firstChild).not.toHaveAttribute("$isEmpty")
+
+    const { container: containerFalse } = render(() => <ToolBlock $isEmpty={false} />)
+    expect(containerFalse.firstChild).toHaveClass("flex flex-wrap gap-2 bg-base-200")
+
+    const { container: containerDefault } = render(() => <ToolBlock />)
+    expect(containerDefault.firstChild).toHaveClass("flex flex-wrap gap-2 bg-base-200")
+  })
 })
 
 describe("extend cm variants component (solid)", () => {

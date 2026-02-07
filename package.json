@@ -6,13 +6,19 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build -w @classmatejs/react && npm run build -w @classmatejs/solid",
-    "test": "npm run build && npm run test:src -w @classmatejs/react && npm run test -w @classmatejs/solid",
+    "build:all": "npm run build -ws --if-present",
+    "build:react": "npm run build -w @classmatejs/react",
+    "build:solid": "npm run build -w @classmatejs/solid",
     "lint": "npm run lint -ws --if-present",
     "clean": "npm run clean -ws --if-present",
+    "test:all": "npm run test:react && npm run test:solid",
+    "test:react": "npm run test:src -w @classmatejs/react",
+    "test:solid": "npm run test -w @classmatejs/solid",
     "typecheck:all": "npm run typecheck -ws --if-present",
-    "publish:classmate": "npm run package -w @classmatejs/react",
-    "publish:solid": "npm run package -w @classmatejs/solid",
+    "typecheck:react": "npm run typecheck -w @classmatejs/react",
+    "typecheck:solid": "npm run typecheck -w @classmatejs/solid",
+    "publish:react": "npm run test:react && npm run package -w @classmatejs/react",
+    "publish:solid": "npm run test:solid && npm run package -w @classmatejs/solid",
     "publish:all": "npm run publish:classmate && npm run publish:solid"
   },
   "devDependencies": {

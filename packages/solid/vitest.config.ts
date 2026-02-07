@@ -5,7 +5,6 @@ import solidPlugin from "vite-plugin-solid"
 import { defineConfig } from "vitest/config"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const resolvePath = (...segments: string[]) => path.resolve(__dirname, ...segments)
 const resolveNodeModule = (...segments: string[]) =>
   path.resolve(__dirname, "..", "..", "node_modules", ...segments)
 

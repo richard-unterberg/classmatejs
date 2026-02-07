@@ -53,8 +53,10 @@ const createVariantsComponent = <
 
     // variant classes and styles
     const variantClasses = Object.entries(variants).map(([key, variantOptions]) => {
-      const propValue = props[key] ?? (defaultVariants as Record<string, string | undefined>)[key]
-      const variantClass = propValue ? (variantOptions as Record<string, any>)?.[propValue] : undefined
+      const propValue =
+        props[key] ?? (defaultVariants as Record<string, string | number | boolean | undefined>)[key]
+      const hasValue = propValue !== undefined && propValue !== null
+      const variantClass = hasValue ? (variantOptions as Record<string, any>)?.[String(propValue)] : undefined
 
       if (typeof variantClass === "function") {
         return variantClass({ ...props, style: styleUtility })

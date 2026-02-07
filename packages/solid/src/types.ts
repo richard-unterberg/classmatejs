@@ -128,6 +128,8 @@ type VariantsConfigVariants<VariantProps, ExtraProps> = {
   >
 }
 
+type VariantValue = string | number | boolean
+
 /**
  * Configuration object for creating styled components with variants.
  *
@@ -151,7 +153,7 @@ export type VariantsConfig<VariantProps extends object, ExtraProps extends objec
    * For example, if you have a variant `size` and a default variant value of `md`,
    * it will use `md` if no explicit `size` prop is provided.
    */
-  defaultVariants?: Partial<Record<keyof VariantProps, string>>
+  defaultVariants?: Partial<Record<keyof VariantProps, VariantValue>>
 }
 
 type VariantsFunction<K> =

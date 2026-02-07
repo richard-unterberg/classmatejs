@@ -81,15 +81,15 @@ const computeVariantClasses = <VariantProps extends object, ExtraProps extends o
   const baseClasses = typeof base === "function" ? base({ ...props, style: styleFactory }) : base || ""
 
   const variantClasses = Object.entries(variants || {}).map(([key, variantOptions]) => {
-    const propValue = (props as Record<string, string | undefined>)[key]
-    const fallbackValue = (defaultVariants as Record<string, string | undefined>)[key]
+    const propValue = (props as Record<string, string | number | boolean | undefined>)[key]
+    const fallbackValue = (defaultVariants as Record<string, string | number | boolean | undefined>)[key]
     const resolvedValue = propValue ?? fallbackValue
 
-    if (!resolvedValue) {
+    if (resolvedValue === undefined || resolvedValue === null) {
       return ""
     }
 
-    const option = (variantOptions as Record<string, any>)[resolvedValue]
+    const option = (variantOptions as Record<string, any>)[String(resolvedValue)]
 
     if (typeof option === "function") {
       return option({ ...props, style: styleFactory })
