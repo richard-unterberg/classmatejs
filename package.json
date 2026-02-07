@@ -13,10 +13,7 @@
     "typecheck:all": "npm run typecheck -ws --if-present",
     "publish:classmate": "npm run package -w @classmatejs/react",
     "publish:solid": "npm run package -w @classmatejs/solid",
-    "publish:all": "npm run publish:classmate && npm run publish:solid",
-    "docs": "npm run dev -w docs",
-    "docs:build": "npm run build -w docs",
-    "docs:preview": "npm run preview -w docs"
+    "publish:all": "npm run publish:classmate && npm run publish:solid"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
