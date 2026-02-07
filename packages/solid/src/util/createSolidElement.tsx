@@ -1,4 +1,4 @@
-import { createComponent, sharedConfig, splitProps } from "solid-js"
+import { createComponent, splitProps } from "solid-js"
 import type { Component, JSX } from "solid-js"
 import { Dynamic } from "solid-js/web"
 import { twMerge } from "tailwind-merge"
@@ -66,107 +66,6 @@ interface CreateSolidElementParams<T extends object, E extends keyof JSX.Intrins
   logicHandlers?: LogicHandler<T>[]
 }
 
-const isProductionEnv = typeof process !== "undefined" ? process.env?.NODE_ENV === "production" : false
-
-const shouldDebugHydration = () => {
-  if (typeof document === "undefined") {
-    return false
-  }
-  if (typeof process !== "undefined" && typeof process.env?.SOLID_CLASSMATE_DEBUG === "string") {
-    const flags = process.env.SOLID_CLASSMATE_DEBUG.split(",").map((flag) => flag.trim())
-    if (flags.includes("hydration")) {
-      return !isProductionEnv
-    }
-  }
-  const globalFlag = (() => {
-    if (typeof globalThis === "undefined") {
-      return false
-    }
-    const raw = (globalThis as Record<string, any>).__SOLID_CLASSMATE_DEBUG__
-    if (!raw) {
-      return false
-    }
-    if (raw === true) {
-      return true
-    }
-    if (typeof raw === "string") {
-      return raw
-        .split(",")
-        .map((flag) => flag.trim())
-        .includes("hydration")
-    }
-    if (typeof raw === "object" && raw !== null) {
-      return raw.hydration === true
-    }
-    return false
-  })()
-  return globalFlag
-}
-
-const logLibraryLoaded = () => {
-  if (isProductionEnv || typeof console === "undefined") {
-    return
-  }
-  if (!shouldDebugHydration()) {
-    return
-  }
-  const globalScope = typeof globalThis !== "undefined" ? (globalThis as Record<string, any>) : undefined
-  if (globalScope) {
-    if (globalScope.__SOLID_CLASSMATE_LOADED__) {
-      return
-    }
-    globalScope.__SOLID_CLASSMATE_LOADED__ = true
-  }
-  const envFlag = typeof process !== "undefined" ? process.env?.SOLID_CLASSMATE_DEBUG : undefined
-  const globalFlag =
-    globalScope && "__SOLID_CLASSMATE_DEBUG__" in globalScope
-      ? globalScope.__SOLID_CLASSMATE_DEBUG__
-      : undefined
-  // eslint-disable-next-line no-console
-  console.info(
-    `[solid-classmate] dev build instrumentation enabled (env: ${envFlag ?? "unset"}, global: ${
-      typeof globalFlag === "object" ? JSON.stringify(globalFlag) : String(globalFlag ?? "unset")
-    })`,
-  )
-}
-
-logLibraryLoaded()
-
-const logHydrationDebug = (componentName: string, props: Record<string, any>) => {
-  if (!shouldDebugHydration()) {
-    return
-  }
-  const context = sharedConfig.context
-  if (!context) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      `[solid-classmate] hydration debug: context missing for <${componentName}>. Props keys: ${Object.keys(props).join(", ")}`,
-    )
-    return
-  }
-  const descriptor = Object.getOwnPropertyDescriptor(props, "children")
-  const descriptorInfo = descriptor
-    ? {
-        hasGetter: typeof descriptor.get === "function",
-        hasSetter: typeof descriptor.set === "function",
-        isValue: "value" in descriptor,
-      }
-    : { missing: true }
-
-  // eslint-disable-next-line no-console
-  console.groupCollapsed(
-    `[solid-classmate] hydrating <${componentName}> (context: ${context.id}, depth: ${context.count})`,
-  )
-  // eslint-disable-next-line no-console
-  console.log("children descriptor", descriptorInfo)
-  // eslint-disable-next-line no-console
-  console.log("prop keys", Object.keys(props))
-  // eslint-disable-next-line no-console
-  console.trace()
-  // eslint-disable-next-line no-console
-  console.groupEnd()
-}
-
 const createSolidElement = <T extends object, E extends keyof JSX.IntrinsicElements | Component<any>>({
   tag,
   computeClassName,
@@ -216,10 +115,6 @@ const createSolidElement = <T extends object, E extends keyof JSX.IntrinsicEleme
       if (!key.startsWith("$")) {
         filteredProps[key] = forwarded[key]
       }
-    }
-
-    if (!isProductionEnv) {
-      logHydrationDebug(displayName, normalizedRecord)
     }
 
     return createComponent(Dynamic, {
