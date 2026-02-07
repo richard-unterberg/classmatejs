@@ -1,4 +1,4 @@
-export type AllowedTags = (typeof domElements)[number]
+import type { JSX } from "solid-js"
 
 export const domElements = [
   "a",
@@ -155,3 +155,5 @@ export const domElements = [
   "rect",
   "stop",
 ] as const
+
+export type AllowedTags = Extract<keyof JSX.IntrinsicElements, (typeof domElements)[number]>

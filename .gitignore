@@ -15,3 +15,5 @@ docs/dist
 test-results
 old-but-working-react-lib
 old-but-working-solid-lib
+old-core
+old-factory

@@ -150,6 +150,7 @@ const createSolidElement = <T extends object, E extends keyof JSX.IntrinsicEleme
   element.__scStyles = styles
   element.__scTag = tag
   element.__scLogic = logicHandlers
+  element.__scPropsToFilter = propsToFilter
 
   return element
 }

@@ -80,6 +80,7 @@ const createReactElement = <
   element.__rcStyles = styles
   element.__rcTag = tag
   element.__rcLogic = logicHandlers
+  element.__rcPropsToFilter = propsToFilter
 
   return element
 }

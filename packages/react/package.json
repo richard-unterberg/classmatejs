@@ -1,7 +1,7 @@
 {
   "name": "@classmatejs/react",
   "description": "A react tool to separate class name logic, create variants and manage styles.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "keywords": [
     "react",
     "classmate",
@@ -41,18 +41,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/richard-unterberg/classmate.git"
+    "url": "git+https://github.com/richard-unterberg/classmatejs.git"
   },
   "bugs": {
-    "url": "https://github.com/richard-unterberg/classmate/issues"
+    "url": "https://github.com/richard-unterberg/classmatejs/issues"
   },
-  "homepage": "https://github.com/richard-unterberg/classmate/#readme",
+  "homepage": "https://github.com/richard-unterberg/classmatejs/tree/master/packages/react#readme",
   "scripts": {
     "========= Test": "",
     "test-clear": "jest --clearCache",
     "test:all": "npm run test-clear && npm run test:src",
     "test:src": "jest --config jest.config.cjs --testPathPattern=test/src",
-    "check:all": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "========= Build": "",
     "build:base": "tsup",
     "build": "npm run build:base",

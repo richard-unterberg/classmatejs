@@ -181,4 +181,36 @@ describe("cm.extends", () => {
 
     expect(container.firstChild).toHaveClass("font-semibold opacity-100 text-slate-900 text-sm px-2 py-1")
   })
+
+  it("preserves variant prop filtering when extending", () => {
+    interface ButtonProps {
+      $isActive?: boolean
+    }
+
+    interface ButtonVariants {
+      size?: "sm" | "lg"
+    }
+
+    const BaseButton = cm.button.variants<ButtonProps, ButtonVariants>({
+      base: "font-semibold",
+      variants: {
+        size: {
+          sm: "text-sm",
+          lg: "text-lg",
+        },
+      },
+      defaultVariants: {
+        size: "sm",
+      },
+    })
+
+    const ExtendedButton = cm.extend(BaseButton)<{ $emphasis?: boolean }>`
+      ${(p) => (p.$emphasis ? "tracking-wide" : "")}
+    `
+
+    const { container } = render(<ExtendedButton size="lg" $emphasis />)
+    expect(container.firstChild).toHaveClass("font-semibold text-lg tracking-wide")
+    expect(container.firstChild).not.toHaveAttribute("size")
+    expect(container.firstChild).not.toHaveAttribute("$emphasis")
+  })
 })

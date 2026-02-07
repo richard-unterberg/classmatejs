@@ -1,7 +1,6 @@
 {
-  "name": "classmate",
+  "name": "classmatejs",
   "private": true,
-  "version": "0.0.6",
   "type": "module",
   "workspaces": [
     "packages/*"
@@ -11,6 +10,7 @@
     "test": "npm run build && npm run test:src -w @classmatejs/react && npm run test -w @classmatejs/solid",
     "lint": "npm run lint -ws --if-present",
     "clean": "npm run clean -ws --if-present",
+    "typecheck:all": "npm run typecheck -ws --if-present",
     "publish:classmate": "npm run package -w @classmatejs/react",
     "publish:solid": "npm run package -w @classmatejs/solid",
     "publish:all": "npm run publish:classmate && npm run publish:solid",
@@ -23,18 +23,15 @@
     "typescript": "^5.9.3"
   },
   "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/richard-unterberg/classmate.git"
+    "url": "git+https://github.com/richard-unterberg/classmatejs.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/richard-unterberg/classmate/issues"
+    "url": "https://github.com/richard-unterberg/classmatejs/issues"
   },
-  "homepage": "https://github.com/richard-unterberg/classmate#readme"
+  "homepage": "https://github.com/richard-unterberg/classmatejs#readme"
 }

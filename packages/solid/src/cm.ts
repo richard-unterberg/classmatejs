@@ -1,21 +1,17 @@
-import type { JSX } from "solid-js"
-
 import createBaseComponent from "./factory/base"
 import createExtendedComponent, { createExtendedVariantsComponent } from "./factory/extend"
 import createVariantsComponent from "./factory/variants"
 import type {
   CmBaseComponent,
   CmComponentFactory,
+  CmFactoryFunction,
   InputComponent,
   Interpolation,
   LogicHandler,
   MergeProps,
   VariantsConfig,
 } from "./types"
-import { domElements } from "./util/domElements"
-
-// init
-type InferComponentProps<Component> = Component extends CmBaseComponent<infer P> ? P : object
+import { type AllowedTags, domElements } from "./util/domElements"
 
 const createExtendBuilder = (
   baseComponent: CmBaseComponent<any>,
@@ -38,7 +34,6 @@ const createExtendBuilder = (
     config: VariantsConfig<VariantProps, ExtraProps>,
   ) =>
     createExtendedVariantsComponent<
-      InferComponentProps<typeof baseComponent>,
       ExtraProps,
       VariantProps,
       MergeProps<typeof baseComponent, ExtraProps & Partial<VariantProps>>
@@ -51,37 +46,36 @@ const createExtendBuilder = (
   return builderWithLogic
 }
 
-const createFactoryFunction = (tag: keyof JSX.IntrinsicElements, logicHandlers: LogicHandler<any>[] = []) => {
-  const factory = <T extends object>(strings: TemplateStringsArray, ...interpolations: Interpolation<T>[]) =>
-    createBaseComponent<T, keyof JSX.IntrinsicElements>(tag, strings, interpolations, {
+const createFactoryFunction = <K extends AllowedTags>(
+  tag: K,
+  logicHandlers: LogicHandler<any>[] = [],
+): CmFactoryFunction<K> => {
+  const factory = (<T extends object>(strings: TemplateStringsArray, ...interpolations: Interpolation<T>[]) =>
+    createBaseComponent<T, K>(tag, strings, interpolations, {
       logic: logicHandlers as LogicHandler<any>[],
-    })
+    })) as CmFactoryFunction<K>
 
-  const factoryWithLogic = factory as typeof factory & {
-    logic: (handler: LogicHandler<any>) => ReturnType<typeof createFactoryFunction>
-    variants: <ExtraProps extends object, VariantProps extends object = ExtraProps>(
-      config: VariantsConfig<VariantProps, ExtraProps>,
-    ) => CmBaseComponent<any>
-  }
-
-  factoryWithLogic.logic = (handler: LogicHandler<any>) =>
+  factory.logic = <LogicProps extends object = object>(handler: LogicHandler<MergeProps<K, LogicProps>>) =>
     createFactoryFunction(tag, [...logicHandlers, handler])
 
-  factoryWithLogic.variants = <ExtraProps extends object, VariantProps extends object = ExtraProps>(
+  factory.variants = <ExtraProps extends object, VariantProps extends object = ExtraProps>(
     config: VariantsConfig<VariantProps, ExtraProps>,
   ) =>
-    createVariantsComponent<keyof JSX.IntrinsicElements, ExtraProps, VariantProps>(tag, config, {
+    createVariantsComponent<K, ExtraProps, VariantProps>(tag, config, {
       logic: logicHandlers as LogicHandler<any>[],
     })
 
-  return factoryWithLogic
+  return factory
 }
 
-const cmTarget = Object.create(null) as CmComponentFactory
+type CmFactoryMap = { [K in AllowedTags]: CmFactoryFunction<K> }
+const cmTarget = Object.create(null) as CmFactoryMap & Pick<CmComponentFactory, "extend">
 
-for (const tag of domElements) {
-  cmTarget[tag as CmIntrinsicElement] = createFactoryFunction(tag as CmIntrinsicElement)
+const registerFactory = <K extends AllowedTags>(tag: K) => {
+  ;(cmTarget as Record<AllowedTags, unknown>)[tag] = createFactoryFunction(tag)
 }
+
+domElements.forEach(registerFactory)
 
 cmTarget.extend = <BCProps extends object>(baseComponent: CmBaseComponent<BCProps> | InputComponent) =>
   createExtendBuilder(baseComponent as CmBaseComponent<any>)

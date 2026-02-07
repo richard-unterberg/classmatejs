@@ -24,6 +24,7 @@ const createExtendedComponent = <T extends object>(
   const baseStyles = baseComponent.__scStyles || {}
   const tag = baseComponent.__scTag || baseComponent
   const baseLogic = (baseComponent.__scLogic as LogicHandler<any>[]) || []
+  const basePropsToFilter = (baseComponent.__scPropsToFilter as (keyof T)[]) || []
   const combinedLogic = [...baseLogic, ...logicHandlers]
 
   const computeClassName = (props: T, collectedStyles: Record<string, string | number>) => {
@@ -61,7 +62,9 @@ const createExtendedComponent = <T extends object>(
   const computeMergedStyles = (props: T) => {
     const collectedStyles: Record<string, string | number> = {}
     computeClassName(props, collectedStyles)
-    return { ...baseStyles, ...collectedStyles }
+    const resolvedBaseStyles =
+      typeof baseStyles === "function" ? (baseStyles as (props: T) => StyleDefinition<T>)(props) : baseStyles
+    return { ...resolvedBaseStyles, ...collectedStyles }
   }
 
   return createSolidElement({
@@ -69,6 +72,7 @@ const createExtendedComponent = <T extends object>(
     computeClassName: (props) => computeClassName(props, {}),
     displayName,
     styles: (props) => computeMergedStyles(props),
+    propsToFilter: basePropsToFilter,
     logicHandlers: combinedLogic as LogicHandler<any>[],
   })
 }
@@ -120,7 +124,9 @@ const createExtendedVariantsComponent = <
   const tag = baseComponent.__scTag || baseComponent
   const baseLogic = (baseComponent.__scLogic as LogicHandler<any>[]) || []
   const combinedLogic = [...(baseLogic as LogicHandler<ComponentProps>[]), ...logicHandlers]
-  const propsToFilter = Object.keys(config.variants || {}) as (keyof ComponentProps)[]
+  const basePropsToFilter = (baseComponent.__scPropsToFilter as (keyof ComponentProps)[]) || []
+  const variantPropsToFilter = Object.keys(config.variants || {}) as (keyof ComponentProps)[]
+  const propsToFilter = Array.from(new Set([...basePropsToFilter, ...variantPropsToFilter]))
 
   const computeClassName = (props: ComponentProps, collectedStyles: Record<string, string | number>) => {
     const styleUtility = (styleDef: StyleDefinition<ComponentProps>) => {

@@ -7,6 +7,8 @@ module.exports = {
       "ts-jest",
       {
         useESM: true,
+        // do manual typechecking to speed up tests
+        isolatedModules: true,
         tsconfig: "./tsconfig.json",
       },
     ],

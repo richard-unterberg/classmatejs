@@ -1,5 +1,5 @@
 /**
-  benchmark for cm - not implement -> if you want to implement, please add "spec" to the file name (see sibling files)
+  benchmark for cm
 */
 import "@testing-library/jest-dom"
 import { render } from "@testing-library/react"
@@ -156,6 +156,55 @@ describe("cm stress benchmark", () => {
 
     expect(container.firstChild).toBeTruthy()
     console.log(`C) ${NUM_COMPONENTS}x cm variants: ${(end - start).toFixed(2)} ms`)
+  })
+
+  it("cm.extend with variants config", () => {
+    const start = performance.now()
+
+    interface BaseProps {
+      $isLoading?: boolean
+    }
+
+    interface VariantExtras extends BaseProps {
+      $tone?: "muted" | "loud"
+    }
+
+    const BaseButton = cm.button<BaseProps>`
+      font-semibold
+      ${(p) => (p.$isLoading ? "opacity-40" : "opacity-100")}
+    `
+
+    const ExtendedWithVariants = cm.extend(BaseButton).variants<VariantExtras, { $size: "sm" | "lg" }>({
+      base: ({ $tone, $isLoading }) => `
+        ${$tone === "muted" ? "text-slate-500" : "text-slate-900"}
+        ${$isLoading ? "pointer-events-none" : ""}
+      `,
+      variants: {
+        $size: {
+          sm: "text-sm px-2 py-1",
+          lg: ({ $isLoading }) => `text-lg px-4 py-2 ${$isLoading ? "cursor-wait" : ""}`,
+        },
+      },
+      defaultVariants: {
+        $size: "sm",
+      },
+    })
+
+    const components = numMap.map((i) => (
+      <ExtendedWithVariants
+        key={i}
+        type="button"
+        $isLoading={i % 3 === 0}
+        $tone={i % 2 === 0 ? "muted" : "loud"}
+        $size={i % 2 === 0 ? "lg" : "sm"}
+      />
+    ))
+
+    const { container } = render(components)
+    const end = performance.now()
+
+    expect(container.firstChild).toBeTruthy()
+    console.log(`C2) ${NUM_COMPONENTS}x cm.extend.variants: ${(end - start).toFixed(2)} ms`)
   })
 
   it("react extend variants", () => {

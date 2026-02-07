@@ -38,6 +38,7 @@ export interface CmBaseComponent<P extends object = object>
   __rcTag?: keyof React.JSX.IntrinsicElements | JSXElementConstructor<any>
   __rcStyles?: StyleDefinition<P> | ((props: P) => StyleDefinition<P>)
   __rcLogic?: LogicHandler<P>[]
+  __rcPropsToFilter?: (keyof P)[]
 }
 
 /**
