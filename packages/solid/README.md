@@ -34,7 +34,7 @@ const SomeButton = cm.button`
   border-1
   transition-all
   ${someConfig.transitionDurationEaseClass}
-  ${({ $isLoading }) => ($isLoading ? "opacity-90 pointer-events-none" : "")}
+  ${({ $isLoading }) => $isLoading && "opacity-90 pointer-events-none"}
 `;
 ```
 
@@ -106,7 +106,7 @@ const SomeButton = cm.button<ButtonProps>`
   text-lg
   mt-5
   ${({ $isActive }) => ($isActive ? "bg-blue-400 text-white" : "bg-blue-400 text-blue-200")}
-  ${({ $isLoading }) => ($isLoading ? "opacity-90 pointer-events-none" : "")}
+  ${({ $isLoading }) => $isLoading && "opacity-90 pointer-events-none"}
 `;
 // transforms to <button className="text-lg mt-5 bg-blue-400 text-white opacity-90 pointer-events-none" />
 ```

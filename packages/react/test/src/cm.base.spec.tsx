@@ -25,6 +25,19 @@ describe("cm base", () => {
     expect(container.firstChild).toBeInstanceOf(HTMLButtonElement)
   })
 
+  it("allows boolean short-circuit in interpolations", () => {
+    const LoadingDiv = cm.div<{ $isLoading?: boolean }>`
+      base
+      ${(p) => p.$isLoading && "opacity-90 pointer-events-none"}
+    `
+
+    const { container, rerender } = render(<LoadingDiv $isLoading />)
+    expect(container.firstChild).toHaveClass("base opacity-90 pointer-events-none")
+
+    rerender(<LoadingDiv $isLoading={false} />)
+    expect(container.firstChild).toHaveClass("base")
+  })
+
   it("can use intrinsic properties of element", () => {
     const HiddenButton = cm.button<JSX.IntrinsicElements["button"]>`
       text-blue 

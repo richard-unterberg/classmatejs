@@ -33,7 +33,7 @@ const SomeButton = cm.button`
   border-1
   transition-all
   ${someConfig.transitionDurationEaseClass}
-  ${({ $isLoading }) => ($isLoading ? "opacity-90 pointer-events-none" : "")}
+  ${({ $isLoading }) => $isLoading && "opacity-90 pointer-events-none"}
 `;
 ```
 

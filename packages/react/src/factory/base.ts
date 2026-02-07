@@ -24,6 +24,7 @@ const createBaseComponent = <T extends object, E extends keyof JSX.IntrinsicElem
   const styles: Record<string, string | number> = {}
   const displayName = `Styled(${typeof tag === "string" ? tag : "Component"})`
   const logicHandlers = options.logic ?? []
+  const resolveInterpolationValue = (value: unknown) => (typeof value === "string" ? value : "")
 
   const computeClassName = (props: MergeProps<E, T>, collectedStyles: Record<string, string | number>) => {
     const styleUtility = (styleDef: StyleDefinition<MergeProps<E, T>>) => {
@@ -35,9 +36,9 @@ const createBaseComponent = <T extends object, E extends keyof JSX.IntrinsicElem
       .map((str, i) => {
         const interp = interpolations[i]
         if (typeof interp === "function") {
-          return str + interp({ ...props, style: styleUtility })
+          return str + resolveInterpolationValue(interp({ ...props, style: styleUtility }))
         }
-        return str + (interp ?? "")
+        return str + resolveInterpolationValue(interp)
       })
       .join("")
       .replace(/\s+/g, " ")

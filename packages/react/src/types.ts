@@ -12,12 +12,13 @@ import type {
  *
  * Interpolations can be:
  * - Static strings or booleans.
- * - Functions that take the component's props and return a class name string.
+ * - Functions that take the component's props and return a class name string or boolean.
  * - Null or undefined values (ignored in class name computation).
  *
  * @typeParam T - The type of the props passed to the interpolation function.
  */
-type InterpolationBase<T> = string | boolean | ((props: T) => string) | null | undefined
+type InterpolationResult = string | boolean | null | undefined
+type InterpolationBase<T> = string | boolean | ((props: T) => InterpolationResult) | null | undefined
 export type Interpolation<T> = InterpolationBase<T & { style: (styleDef: StyleDefinition<T>) => string }>
 
 export type LogicHandler<P extends object> = (props: P) => Partial<P> | undefined

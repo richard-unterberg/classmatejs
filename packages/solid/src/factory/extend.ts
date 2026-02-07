@@ -26,6 +26,7 @@ const createExtendedComponent = <T extends object>(
   const baseLogic = (baseComponent.__scLogic as LogicHandler<any>[]) || []
   const basePropsToFilter = (baseComponent.__scPropsToFilter as (keyof T)[]) || []
   const combinedLogic = [...baseLogic, ...logicHandlers]
+  const resolveInterpolationValue = (value: unknown) => (typeof value === "string" ? value : "")
 
   const computeClassName = (props: T, collectedStyles: Record<string, string | number>) => {
     const styleUtility = (styleDef: StyleDefinition<T>) => {
@@ -48,9 +49,9 @@ const createExtendedComponent = <T extends object>(
       .map((str, i) => {
         const interp = interpolations[i]
         if (typeof interp === "function") {
-          return str + interp(getInterpolationProps())
+          return str + resolveInterpolationValue(interp(getInterpolationProps()))
         }
-        return str + (interp ?? "")
+        return str + resolveInterpolationValue(interp)
       })
       .join("")
       .replace(/\s+/g, " ")
