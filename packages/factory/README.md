@@ -1,3 +1,5 @@
+> ⚠️ The shared `@classmatejs/core` runtime and the headless `@classmatejs/factory` package are muted for now while we iterate on a new architecture. They remain in the repo for archival purposes but are not part of the build or publish pipeline.
+
 # @classmatejs/factory
 
 Headless version of the Classmate factory. It reuses the same styling and variants logic from `@classmatejs/core` but, instead of returning framework components, it simply computes class name strings (merged through `tailwind-merge`). Perfect for CLI renderers, template engines, or other environments where you only need strings.
