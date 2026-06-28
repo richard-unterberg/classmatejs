@@ -16,6 +16,17 @@ export type Interpolation<T> = InterpolationBase<T & { style: (styleDef: StyleDe
 
 export type LogicHandler<P extends object> = (props: P) => Partial<P> | undefined
 
+type DollarKeys<P> = Extract<keyof P, `$${string}`>
+type DollarProps<P> = Pick<P, DollarKeys<P>>
+type TransformProps<P, K extends keyof JSX.IntrinsicElements> = Omit<
+  JSX.IntrinsicElements[K],
+  keyof DollarProps<P> | "$_as"
+> &
+  DollarProps<P>
+type TransformAsProps<P, K extends keyof JSX.IntrinsicElements> = TransformProps<P, K> & {
+  $_as: K
+}
+
 export type InputComponent = Component<any> | CmBaseComponent<any>
 
 /**
@@ -24,7 +35,9 @@ export type InputComponent = Component<any> | CmBaseComponent<any>
  * @typeParam P - Props of the component.
  */
 export interface CmBaseComponent<P extends object = object> extends Component<P> {
+  <K extends keyof JSX.IntrinsicElements>(props: TransformAsProps<P, K>): JSX.Element
   displayName?: string
+  __scClassmate: true
   __scComputeClassName?: (props: P) => string
   __scTag?: keyof JSX.IntrinsicElements | Component<any>
   __scStyles?: StyleDefinition<P> | ((props: P) => StyleDefinition<P>)
@@ -193,6 +206,33 @@ type VariantsFunction<K> =
     config: VariantsConfig<VariantProps, ExtraProps>,
   ) => CmBaseComponent<MergeProps<K, ExtraProps & Partial<VariantProps>>>
 
+type TransformComponentProps<
+  E extends CmBaseComponent<any>,
+  K extends keyof JSX.IntrinsicElements,
+> = E extends CmBaseComponent<infer P> ? TransformProps<P, K> : never
+
+export type TransformTemplateBuilder<
+  E extends CmBaseComponent<any>,
+  K extends keyof JSX.IntrinsicElements,
+> = CmBaseComponent<TransformComponentProps<E, K>> &
+  (<T extends object = object>(
+    strings: TemplateStringsArray,
+    ...interpolations: Interpolation<TransformComponentProps<E, K> & T>[]
+  ) => CmBaseComponent<TransformComponentProps<E, K> & T>)
+
+type TransformFunction =
+  /**
+   * The `transform` method renders a classmate component as another intrinsic element.
+   *
+   * @param component - A classmate component created by `cm`, `cm.extend`, variants, or transform.
+   * @returns Intrinsic element builders for transforming the component.
+   */
+  <E extends CmBaseComponent<any>>(
+    component: E,
+  ) => {
+    [K in keyof JSX.IntrinsicElements]: TransformTemplateBuilder<E, K>
+  }
+
 /**
  * Factory for creating styled components with intrinsic elements.
  */
@@ -211,6 +251,7 @@ export type CmComponentFactory = {
   [K in keyof JSX.IntrinsicElements]: CmFactoryFunction<K>
 } & {
   extend: ExtendFunction
+  transform: TransformFunction
 }
 
 /**

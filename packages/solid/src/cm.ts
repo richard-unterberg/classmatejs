@@ -1,5 +1,6 @@
 import createBaseComponent from "./factory/base"
 import createExtendedComponent, { createExtendedVariantsComponent } from "./factory/extend"
+import createTransformedComponent from "./factory/transform"
 import createVariantsComponent from "./factory/variants"
 import type {
   CmBaseComponent,
@@ -12,6 +13,11 @@ import type {
   VariantsConfig,
 } from "./types"
 import { type AllowedTags, domElements } from "./util/domElements"
+
+const emptyTemplate = Object.assign([""], { raw: [""] }) as unknown as TemplateStringsArray
+
+const isTemplateStringsArray = (value: unknown): value is TemplateStringsArray =>
+  Array.isArray(value) && "raw" in value
 
 const createExtendBuilder = (
   baseComponent: CmBaseComponent<any>,
@@ -46,6 +52,44 @@ const createExtendBuilder = (
   return builderWithLogic
 }
 
+const copyClassmateMetadata = (target: Record<string, any>, source: CmBaseComponent<any>) => {
+  target.displayName = source.displayName
+  target.__scClassmate = true
+  target.__scComputeClassName = source.__scComputeClassName
+  target.__scTag = source.__scTag
+  target.__scStyles = source.__scStyles
+  target.__scLogic = source.__scLogic
+  target.__scPropsToFilter = source.__scPropsToFilter
+}
+
+const createTransformTarget = (baseComponent: CmBaseComponent<any>, tag: AllowedTags) => {
+  const transformedComponent = createTransformedComponent(baseComponent, tag, emptyTemplate, [])
+  const target = ((firstArg?: unknown, ...interpolations: Interpolation<any>[]) => {
+    if (isTemplateStringsArray(firstArg)) {
+      return createTransformedComponent(baseComponent, tag, firstArg, interpolations)
+    }
+
+    return transformedComponent(firstArg as any)
+  }) as Record<string, any>
+
+  copyClassmateMetadata(target, transformedComponent)
+  return target
+}
+
+const createTransformBuilder = (baseComponent: CmBaseComponent<any>) => {
+  if (baseComponent.__scClassmate !== true) {
+    throw new Error("cm.transform can only transform classmate components")
+  }
+
+  const builder = Object.create(null) as Record<AllowedTags, unknown>
+  const registerTransformTarget = (tag: AllowedTags) => {
+    builder[tag] = createTransformTarget(baseComponent, tag)
+  }
+
+  domElements.forEach(registerTransformTarget)
+  return builder
+}
+
 const createFactoryFunction = <K extends AllowedTags>(
   tag: K,
   logicHandlers: LogicHandler<any>[] = [],
@@ -69,7 +113,7 @@ const createFactoryFunction = <K extends AllowedTags>(
 }
 
 type CmFactoryMap = { [K in AllowedTags]: CmFactoryFunction<K> }
-const cmTarget = Object.create(null) as CmFactoryMap & Pick<CmComponentFactory, "extend">
+const cmTarget = Object.create(null) as CmFactoryMap & Pick<CmComponentFactory, "extend" | "transform">
 
 const registerFactory = <K extends AllowedTags>(tag: K) => {
   ;(cmTarget as Record<AllowedTags, unknown>)[tag] = createFactoryFunction(tag)
@@ -79,6 +123,8 @@ domElements.forEach(registerFactory)
 
 cmTarget.extend = <BCProps extends object>(baseComponent: CmBaseComponent<BCProps> | InputComponent) =>
   createExtendBuilder(baseComponent as CmBaseComponent<any>)
+
+cmTarget.transform = (baseComponent: CmBaseComponent<any>) => createTransformBuilder(baseComponent) as any
 
 const cm = cmTarget
 

@@ -43,6 +43,8 @@ const createReactElement = <
     const enhancedProps = logicHandlers.length > 0 ? applyLogicHandlers(baseProps, logicHandlers) : baseProps
     const normalizedProps = enhancedProps as T & Record<string, any>
     const computedClassName = computeClassName(normalizedProps)
+    const renderTag =
+      typeof normalizedProps.$_as === "string" ? (normalizedProps.$_as as keyof JSX.IntrinsicElements) : tag
 
     // Filter out $-prefixed props and any props in propsToFilter
     const domProps: Record<string, unknown> = {}
@@ -66,7 +68,7 @@ const createReactElement = <
     // merge computed class names with incoming className - local classname always first prio
     const mergedClassName = twMerge(computedClassName, [incomingClassName].filter(Boolean).join(" ").trim())
 
-    return createElement(tag, {
+    return createElement(renderTag, {
       ...domProps,
       className: mergedClassName,
       style: mergedStyles,
@@ -75,6 +77,7 @@ const createReactElement = <
   }) as CmBaseComponent<T>
 
   element.displayName = displayName || "Cm Component"
+  element.__rcClassmate = true
   element.__rcComputeClassName = (props: T) =>
     computeClassName(logicHandlers.length > 0 ? applyLogicHandlers(props, logicHandlers) : props)
   element.__rcStyles = styles

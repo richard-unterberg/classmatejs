@@ -78,6 +78,8 @@ const createSolidElement = <T extends object, E extends keyof JSX.IntrinsicEleme
     const normalizedPropsBase =
       logicHandlers.length > 0 ? applyLogicHandlers(incomingProps, logicHandlers) : incomingProps
     const normalizedProps = normalizedPropsBase as T & Record<string, any>
+    const renderTag =
+      typeof normalizedProps.$_as === "string" ? (normalizedProps.$_as as keyof JSX.IntrinsicElements) : tag
 
     const normalizedRecord = normalizedProps as Record<string, any>
     const reservedKeys = [
@@ -118,7 +120,7 @@ const createSolidElement = <T extends object, E extends keyof JSX.IntrinsicEleme
     }
 
     return createComponent(Dynamic, {
-      component: tag as any,
+      component: renderTag as any,
       ...filteredProps,
       get class() {
         const computedClassName = computeClassName(normalizedProps)
@@ -145,6 +147,7 @@ const createSolidElement = <T extends object, E extends keyof JSX.IntrinsicEleme
   }) as CmBaseComponent<T>
 
   element.displayName = displayName || "Cm Component"
+  element.__scClassmate = true
   element.__scComputeClassName = (props: T) =>
     computeClassName(logicHandlers.length > 0 ? applyLogicHandlers(props, logicHandlers) : props)
   element.__scStyles = styles

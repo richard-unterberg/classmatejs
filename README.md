@@ -44,6 +44,7 @@ const SomeButton = cm.button`
 - Class name-focused components
 - CVA like **Variants**
 - Extend components (template strings **or** `cm.extend(Component).variants`)
+- Transform classmate components into another intrinsic element
 - Dynamic styles
 - TypeScript support
 - Tested with SSR Frameworks
@@ -62,6 +63,15 @@ npm i @classmatejs/react
 # or yarn add or pnpm add ...
 ```
 
+For bundled apps, you can install ClassmateJS as a dev dependency:
+
+```bash
+npm i -D @classmatejs/react
+```
+
+Use a regular dependency for packages/libraries or deployments that resolve
+`node_modules` at runtime after installing only production dependencies.
+
 ### SolidJs
 
 - [docs](packages/solid)
@@ -71,6 +81,15 @@ npm i @classmatejs/react
 npm i @classmatejs/solid
 # or yarn add or pnpm add ...
 ```
+
+For bundled apps, you can install ClassmateJS as a dev dependency:
+
+```bash
+npm i -D @classmatejs/solid
+```
+
+Use a regular dependency for packages/libraries or deployments that resolve
+`node_modules` at runtime after installing only production dependencies.
 
 ## Tailwind Merge
 

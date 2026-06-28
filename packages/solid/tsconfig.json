@@ -16,6 +16,6 @@
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "types": ["node"]
   },
-  "include": ["src"],
+  "include": ["src", "test/types"],
   "exclude": ["node_modules", "dist"]
 }

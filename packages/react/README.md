@@ -42,6 +42,7 @@ const SomeButton = cm.button`
 - Class name-focused components
 - Variants
 - Extend components
+- Transform components
 - Dynamic styles
 - TypeScript support
 - Tested with SSR Frameworks
@@ -55,6 +56,7 @@ const SomeButton = cm.button`
 - [Usage with props](#use-with-props)
 - [Create Variants](#create-variants)
 - [Extend components](#extend)
+- [Transform components](#transform)
 - [Add CSS Styles](#add-css-styles)
 - [Use inside React components](#use-inside-react-components)
 - [Add logic headers](#add-logic-headers)
@@ -73,6 +75,17 @@ npm i @classmatejs/react
 # or
 yarn add @classmatejs/react
 ```
+
+For bundled apps, you can also install ClassmateJS as a dev dependency:
+
+```bash
+npm i -D @classmatejs/react
+# or
+yarn add -D @classmatejs/react
+```
+
+Use a regular dependency for packages/libraries or deployments that resolve
+`node_modules` at runtime after installing only production dependencies.
 
 ## Basic
 
@@ -205,6 +218,68 @@ const Container = cm.extend(MyOtherComponent)`
 `;
 // transforms to: <button className="text-lg mt-5 py-2 px-5 min-h-24" />
 ```
+
+## Transform
+
+Transform renders an existing classmate component as another intrinsic element.
+It keeps the original class logic and `$` props, but TypeScript validates props
+against the new element.
+
+```tsx
+import cm from "@classmatejs/react";
+
+const MyButton = cm.button<{ $toggleCta?: boolean }>`
+  absolute
+  min-w-300
+  ${({ $toggleCta }) => ($toggleCta ? "bg-red-500" : "bg-blue-500")}
+`;
+
+export default () => <MyButton $_as="span" $toggleCta />;
+// outputs: <span className="absolute min-w-300 bg-red-500" />
+```
+
+Use the builder API when you want a reusable transformed component, or add more
+classes with a tagged template.
+
+```tsx
+const SpanButton = cm.transform(MyButton).span;
+const TextSpanButton = cm.transform(MyButton).span`
+  text-neutral
+  tracking-wide
+`;
+
+export default () => <TextSpanButton $toggleCta />;
+// outputs: <span className="absolute min-w-300 bg-red-500 text-neutral tracking-wide" />
+```
+
+Transform also works with variants and extended classmate components.
+
+```tsx
+const VariantDiv = cm.div.variants<{ $size: "sm" | "md" }>({
+  base: "absolute min-w-300",
+  variants: {
+    $size: {
+      sm: "w-10 h-10",
+      md: "w-20 h-20",
+    },
+  },
+  defaultVariants: {
+    $size: "md",
+  },
+});
+
+const Main = cm.transform(VariantDiv).main`
+  text-neutral
+  tracking-wide
+`;
+
+export default () => <Main $size="sm" role="main" />;
+// outputs: <main className="absolute min-w-300 w-10 h-10 text-neutral tracking-wide" role="main" />
+```
+
+`cm.transform` only accepts classmate components in v1. Regular React
+components are not transformable because classmate cannot know where their
+classes are attached.
 
 ## Add CSS Styles
 
