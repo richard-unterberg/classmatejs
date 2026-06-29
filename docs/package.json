@@ -1,0 +1,26 @@
+{
+  "name": "@classmatejs/docs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "scripts": {
+    "dev": "vike dev",
+    "build": "vike build",
+    "preview": "vike preview",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "generate:docs": "nivel prepare",
+    "predev": "npm run generate:docs",
+    "prebuild": "npm run generate:docs",
+    "pretypecheck": "npm run generate:docs"
+  },
+  "dependencies": {
+    "@unterberg/nivel": "^0.3.0-alpha-4",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "vike": "^0.4.260",
+    "vike-react": "^0.6.25"
+  }
+}

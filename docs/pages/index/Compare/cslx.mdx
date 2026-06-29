@@ -1,0 +1,35 @@
+```ts ts-only title="CreateTodo.telefunc.ts"
+
+interface AlertProps {
+  $severity: "info" | "warning" | "error"
+  $isActive?: boolean
+}
+
+const Alert = cm.div.variants<AlertProps>({
+  // optional
+  base: ({ $isActive, style }) => `
+    ${$isActive ? "custom-class-active" : "custom-class-inactive"}
+    p-4
+    rounded-md
+    ${style({
+      backdropFilter: "blur(14px) saturate(160%)",
+      border: "1px solid color-mix(in oklab, currentColor 18%, transparent)",
+      boxShadow: $isActive
+        ? "0 14px 40px color-mix(in oklab, currentColor 18%, transparent)"
+        : "0 6px 18px rgba(0, 0, 0, 0.08)",
+    })}
+  `,
+  // required
+  variants: {
+    $severity: {
+      warning: "bg-yellow-100 text-yellow-800",
+      info: "bg-blue-100 text-blue-800",
+      error: "bg-red-100 text-red-800",
+    },
+  },
+  // optional - used if no variant was found
+  defaultVariants: {
+    $severity: "info",
+  },
+})
+```

@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "docs"
   ],
   "scripts": {
     "build:all": "npm run build -ws --if-present",
@@ -20,7 +21,9 @@
     "publish:react": "npm run test:react && npm run package -w @classmatejs/react",
     "publish:solid": "npm run test:solid && npm run package -w @classmatejs/solid",
     "publish:all": "npm run publish:react && npm run publish:solid",
-    "verify": "npm run lint && npm run typecheck:all && npm run test:all"
+    "verify": "npm run lint && npm run typecheck:all && npm run test:all",
+    "docs:dev": "npm run dev -w @classmatejs/docs",
+    "docs:build": "npm run build -w @classmatejs/docs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.1",

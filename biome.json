@@ -6,29 +6,30 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignoreUnknown": false,
-    "ignore": ["dist", ".localPack", "node_modules", "package.json"]
+    "ignoreUnknown": false
   },
   "formatter": {
     "enabled": true,
     "indentWidth": 2,
     "indentStyle": "space",
     "lineWidth": 110,
-    "lineEnding": "lf",
-    "ignore": ["dist", ".localPack", "node_modules", "package.json"]
+    "lineEnding": "lf"
   },
-  "organizeImports": {
-    "enabled": true
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    },
+    "formatter": {
+      "quoteStyle": "single"
+    }
   },
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
       "suspicious": {
         "noExplicitAny": "off"
       }
-    },
-    "ignore": ["dist", ".localPack", "node_modules", "package.json"]
+    }
   },
   "javascript": {
     "formatter": {

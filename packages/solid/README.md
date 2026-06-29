@@ -143,24 +143,26 @@ interface AlertProps {
   $severity: "info" | "warning" | "error";
   $isActive?: boolean;
 }
+
 const Alert = cm.div.variants<AlertProps>({
   // optional
-  base: (p) => `
-    ${p.isActive ? "custom-active" : "custom-inactive"}
-    p-4 rounded-md
+  base: ({ $isActive }) => `
+    ${$isActive ? "custom-active" : "custom-inactive"}
+    p-4
+    rounded-md
   `,
   // required
   variants: {
     $severity: {
       warning: "bg-yellow-100 text-yellow-800",
       info: ({ $isActive }) =>
-        `bg-blue-100 text-blue-800 ${ $isActive ? "shadow-lg" : ""}`,
+        `bg-blue-100 text-blue-800 ${$isActive ? "shadow-lg" : ""}`,
       error: ({ $isActive }) =>
-        `bg-red-100 text-red-800 ${ $isActive ? "ring ring-red-500" : ""}`,
+        `bg-red-100 text-red-800 ${$isActive ? "ring ring-red-500" : ""}`,
     },
   },
   // optional - used if no variant was found
-  defaultVariant: {
+  defaultVariants: {
     $severity: "info",
   },
 });
