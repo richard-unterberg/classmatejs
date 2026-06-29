@@ -23,7 +23,8 @@
     "publish:all": "npm run publish:react && npm run publish:solid",
     "verify": "npm run lint && npm run typecheck:all && npm run test:all",
     "docs:dev": "npm run dev -w @classmatejs/docs",
-    "docs:build": "npm run build -w @classmatejs/docs"
+    "docs:build": "npm run build -w @classmatejs/docs",
+    "prepare": "lefthook install"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.1",
