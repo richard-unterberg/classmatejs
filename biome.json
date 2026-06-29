@@ -1,7 +1,14 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "files": {
-    "includes": ["**", "!dist"]
+    "includes": [
+      "**",
+      "!**/dist",
+      "!**/test",
+      "!(nivel-generated)",
+      "!node_modules",
+      "!docs/pages/(nivel-generated)"
+    ]
   },
   "formatter": {
     "indentWidth": 2,
@@ -22,13 +29,17 @@
         "noDangerouslySetInnerHtml": "warn"
       },
       "suspicious": {
-        "noArrayIndexKey": "warn"
+        "noArrayIndexKey": "warn",
+        "noExplicitAny": "off"
       },
       "complexity": {
         "noImportantStyles": "warn"
       },
       "nursery": {
         "noInlineStyles": "warn"
+      },
+      "performance": {
+        "noAccumulatingSpread": "warn"
       }
     }
   },
