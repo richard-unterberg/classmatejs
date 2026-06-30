@@ -21,14 +21,13 @@ const createExtendedComponent = <T extends object>(
 ): CmBaseComponent<T> => {
   const displayName = `Extended(${baseComponent.displayName || 'Component'})`
   const baseComputeClassName = baseComponent.__scComputeClassName || (() => '')
-  const baseStyles = baseComponent.__scStyles || {}
   const tag = baseComponent.__scTag || baseComponent
   const baseLogic = (baseComponent.__scLogic as LogicHandler<any>[]) || []
   const basePropsToFilter = (baseComponent.__scPropsToFilter as (keyof T)[]) || []
   const combinedLogic = [...baseLogic, ...logicHandlers]
   const resolveInterpolationValue = (value: unknown) => (typeof value === 'string' ? value : '')
 
-  const computeClassName = (props: T, collectedStyles: Record<string, string | number>) => {
+  const computeClassName = (props: T, collectedStyles: StyleDefinition<T> = {}) => {
     const styleUtility = (styleDef: StyleDefinition<T>) => {
       Object.assign(collectedStyles, styleDef)
       return ''
@@ -43,7 +42,7 @@ const createExtendedComponent = <T extends object>(
       return interpolationProps
     }
 
-    const baseClassName = baseComputeClassName(getInterpolationProps())
+    const baseClassName = baseComputeClassName(getInterpolationProps(), collectedStyles)
 
     const extendedClassName = strings
       .map((str, i) => {
@@ -60,19 +59,10 @@ const createExtendedComponent = <T extends object>(
     return [baseClassName, extendedClassName].filter(Boolean).join(' ')
   }
 
-  const computeMergedStyles = (props: T) => {
-    const collectedStyles: Record<string, string | number> = {}
-    computeClassName(props, collectedStyles)
-    const resolvedBaseStyles =
-      typeof baseStyles === 'function' ? (baseStyles as (props: T) => StyleDefinition<T>)(props) : baseStyles
-    return { ...resolvedBaseStyles, ...collectedStyles }
-  }
-
   return createSolidElement({
     tag,
-    computeClassName: (props) => computeClassName(props, {}),
+    computeClassName,
     displayName,
-    styles: (props) => computeMergedStyles(props),
     propsToFilter: basePropsToFilter,
     logicHandlers: combinedLogic as LogicHandler<any>[],
   })
@@ -121,7 +111,6 @@ const createExtendedVariantsComponent = <
 ): CmBaseComponent<ComponentProps> => {
   const displayName = `ExtendedVariants(${baseComponent.displayName || 'Component'})`
   const baseComputeClassName = baseComponent.__scComputeClassName || (() => '')
-  const baseStyles = baseComponent.__scStyles || {}
   const tag = baseComponent.__scTag || baseComponent
   const baseLogic = (baseComponent.__scLogic as LogicHandler<any>[]) || []
   const combinedLogic = [...(baseLogic as LogicHandler<ComponentProps>[]), ...logicHandlers]
@@ -129,7 +118,7 @@ const createExtendedVariantsComponent = <
   const variantPropsToFilter = Object.keys(config.variants || {}) as (keyof ComponentProps)[]
   const propsToFilter = Array.from(new Set([...basePropsToFilter, ...variantPropsToFilter]))
 
-  const computeClassName = (props: ComponentProps, collectedStyles: Record<string, string | number>) => {
+  const computeClassName = (props: ComponentProps, collectedStyles: StyleDefinition<ComponentProps> = {}) => {
     const styleUtility = (styleDef: StyleDefinition<ComponentProps>) => {
       Object.assign(collectedStyles, styleDef)
       return ''
@@ -144,7 +133,7 @@ const createExtendedVariantsComponent = <
       return interpolationProps
     }
 
-    const baseClassName = baseComputeClassName(getInterpolationProps())
+    const baseClassName = baseComputeClassName(getInterpolationProps(), collectedStyles)
 
     const variantProps = props as unknown as VariantProps & ExtraProps
     const styleForVariants = styleUtility as unknown as (styleDef: StyleDefinition<VariantProps & ExtraProps>) => string
@@ -154,21 +143,10 @@ const createExtendedVariantsComponent = <
     return [baseClassName, variantClassName].filter(Boolean).join(' ')
   }
 
-  const computeMergedStyles = (props: ComponentProps) => {
-    const collectedStyles: Record<string, string | number> = {}
-    computeClassName(props, collectedStyles)
-    const resolvedBaseStyles =
-      typeof baseStyles === 'function'
-        ? (baseStyles as (props: ComponentProps) => StyleDefinition<ComponentProps>)(props)
-        : baseStyles
-    return { ...resolvedBaseStyles, ...collectedStyles }
-  }
-
   return createSolidElement({
     tag,
-    computeClassName: (props) => computeClassName(props, {}),
+    computeClassName,
     displayName,
-    styles: (props) => computeMergedStyles(props),
     propsToFilter,
     logicHandlers: combinedLogic as LogicHandler<any>[],
   })

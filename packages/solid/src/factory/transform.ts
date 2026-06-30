@@ -17,11 +17,10 @@ const createTransformedComponent = <T extends object, E extends keyof JSX.Intrin
 
   const displayName = `Transformed(${baseComponent.displayName || 'Component'})`
   const baseComputeClassName = baseComponent.__scComputeClassName || (() => '')
-  const baseStyles = baseComponent.__scStyles || {}
   const baseLogic = (baseComponent.__scLogic as LogicHandler<any>[]) || []
   const basePropsToFilter = (baseComponent.__scPropsToFilter as (keyof T)[]) || []
 
-  const computeClassName = (props: T, collectedStyles: Record<string, string | number>) => {
+  const computeClassName = (props: T, collectedStyles: StyleDefinition<T> = {}) => {
     const styleUtility = (styleDef: StyleDefinition<T>) => {
       Object.assign(collectedStyles, styleDef)
       return ''
@@ -36,7 +35,7 @@ const createTransformedComponent = <T extends object, E extends keyof JSX.Intrin
       return interpolationProps
     }
 
-    const baseClassName = baseComputeClassName(getInterpolationProps())
+    const baseClassName = baseComputeClassName(getInterpolationProps(), collectedStyles)
 
     const transformClassName = strings
       .map((str, i) => {
@@ -53,19 +52,10 @@ const createTransformedComponent = <T extends object, E extends keyof JSX.Intrin
     return [baseClassName, transformClassName].filter(Boolean).join(' ')
   }
 
-  const computeMergedStyles = (props: T) => {
-    const collectedStyles: Record<string, string | number> = {}
-    computeClassName(props, collectedStyles)
-    const resolvedBaseStyles =
-      typeof baseStyles === 'function' ? (baseStyles as (props: T) => StyleDefinition<T>)(props) : baseStyles
-    return { ...resolvedBaseStyles, ...collectedStyles }
-  }
-
   return createSolidElement({
     tag,
-    computeClassName: (props) => computeClassName(props, {}),
+    computeClassName,
     displayName,
-    styles: (props) => computeMergedStyles(props),
     propsToFilter: basePropsToFilter,
     logicHandlers: baseLogic as LogicHandler<any>[],
   })

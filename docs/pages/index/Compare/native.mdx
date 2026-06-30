@@ -1,0 +1,37 @@
+```tsx title="StyledAlert.tsx"
+import { type ComponentPropsWithoutRef } from "react"
+
+interface AlertProps extends ComponentPropsWithoutRef<"div"> {
+  severity?: "info" | "warning" | "error"
+  isActive?: boolean
+}
+
+const severityClasses = {
+  warning: "bg-warning/20 text-warning",
+  info: "bg-info/20 text-info",
+  error: "bg-error/20 text-error",
+} satisfies Record<NonNullable<AlertProps["severity"]>, string>
+
+const Alert = ({
+  severity = "info",
+  isActive = false,
+  className,
+  ...props
+}: AlertProps) => {
+  const classes = [
+    isActive ? "custom-class-active" : "custom-class-inactive",
+    "p-4",
+    "rounded-md",
+    severityClasses[severity],
+    isActive
+      ? "border border-current/50 shadow-xl shadow-current/20"
+      : "border border-current/20 border-dashed",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ")
+
+  return <div {...props} className={classes} />
+}
+
+```

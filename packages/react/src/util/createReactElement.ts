@@ -9,7 +9,7 @@ interface CreateReactElementParams<
   E extends keyof JSX.IntrinsicElements | JSXElementConstructor<any>,
 > {
   tag: E
-  computeClassName: (props: T) => string
+  computeClassName: (props: T, collectedStyles?: StyleDefinition<T>) => string
   displayName: string
   styles?: StyleDefinition<T> | ((props: T) => StyleDefinition<T>)
   propsToFilter?: (keyof T)[]
@@ -39,7 +39,8 @@ const createReactElement = <T extends object, E extends keyof JSX.IntrinsicEleme
     const baseProps = props as T
     const enhancedProps = logicHandlers.length > 0 ? applyLogicHandlers(baseProps, logicHandlers) : baseProps
     const normalizedProps = enhancedProps as T & Record<string, any>
-    const computedClassName = computeClassName(normalizedProps)
+    const collectedStyles: StyleDefinition<T> = {}
+    const computedClassName = computeClassName(normalizedProps, collectedStyles)
     const renderTag =
       typeof normalizedProps.$_as === 'string' ? (normalizedProps.$_as as keyof JSX.IntrinsicElements) : tag
 
@@ -57,6 +58,7 @@ const createReactElement = <T extends object, E extends keyof JSX.IntrinsicEleme
     const localStyle = typeof domProps.style === 'object' && domProps.style !== null ? domProps.style : {}
     const mergedStyles = {
       ...dynamicStyles,
+      ...collectedStyles,
       ...localStyle,
     }
 
@@ -75,8 +77,8 @@ const createReactElement = <T extends object, E extends keyof JSX.IntrinsicEleme
 
   element.displayName = displayName || 'Cm Component'
   element.__rcClassmate = true
-  element.__rcComputeClassName = (props: T) =>
-    computeClassName(logicHandlers.length > 0 ? applyLogicHandlers(props, logicHandlers) : props)
+  element.__rcComputeClassName = (props: T, collectedStyles?: StyleDefinition<T>) =>
+    computeClassName(logicHandlers.length > 0 ? applyLogicHandlers(props, logicHandlers) : props, collectedStyles)
   element.__rcStyles = styles
   element.__rcTag = tag
   element.__rcLogic = logicHandlers

@@ -1,57 +1,40 @@
-```tsx title="MyAlert.tsx"
-import { type ComponentPropsWithoutRef, type CSSProperties, forwardRef } from "react"
+```tsx title="StyledAlert.tsx"
+import { type ComponentPropsWithoutRef } from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
 const alertVariants = cva("p-4 rounded-md", {
   variants: {
-    $severity: {
-      warning: "bg-yellow-100 text-yellow-800 dark:bg-yellow-600/50 dark:text-yellow-200",
-      info: "bg-blue-100 text-blue-800 dark:bg-blue-600/50 dark:text-blue-200",
-      error: "bg-red-100 text-red-800 dark:bg-red-600/50 dark:text-red-200",
+    severity: {
+      warning: "bg-warning/20 text-warning",
+      info: "bg-info/20 text-info",
+      error: "bg-error/20 text-error",
     },
-    $isActive: {
-      true: "custom-class-active",
-      false: "custom-class-inactive border-gray-300 shadow-sm",
+    isActive: {
+      true: "custom-class-active border border-current/50 shadow-xl shadow-current/20",
+      false: "custom-class-inactive border border-current/20 border-dashed",
     },
   },
   defaultVariants: {
-    $severity: "info",
-    $isActive: false,
+    severity: "info",
+    isActive: false,
   },
 })
 
-interface AlertProps
-  extends ComponentPropsWithoutRef<"div">,
-    VariantProps<typeof alertVariants> {}
+type AlertProps = ComponentPropsWithoutRef<"div"> &
+  VariantProps<typeof alertVariants>
 
-const activeStyle = {
-  border: "1px solid color-mix(in oklab, currentColor 18%, transparent)",
-  boxShadow: "0 14px 40px color-mix(in oklab, currentColor 18%, transparent)",
-} satisfies CSSProperties
-
-const Alert = forwardRef<HTMLDivElement, AlertProps>(
-  (
-    {
-      $severity,
-      $isActive,
-      className,
-      style,
-      ...props
-    },
-    ref,
-  ) => {
-    return (
-      <div
-        {...props}
-        ref={ref}
-        className={alertVariants({ $severity, $isActive, className })}
-        style={{
-          ...($isActive ? activeStyle : undefined),
-          ...style,
-        }}
-      />
-    )
-  },
-)
+const Alert = ({
+  severity,
+  isActive,
+  className,
+  ...props
+}: AlertProps) => {
+  return (
+    <div
+      {...props}
+      className={alertVariants({ severity, isActive, className })}
+    />
+  )
+}
 
 ```

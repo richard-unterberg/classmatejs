@@ -38,7 +38,7 @@ export interface CmBaseComponent<P extends object = object> extends Component<P>
   <K extends keyof JSX.IntrinsicElements>(props: TransformAsProps<P, K>): JSX.Element
   displayName?: string
   __scClassmate: true
-  __scComputeClassName?: (props: P) => string
+  __scComputeClassName?: (props: P, collectedStyles?: StyleDefinition<P>) => string
   __scTag?: keyof JSX.IntrinsicElements | Component<any>
   __scStyles?: StyleDefinition<P> | ((props: P) => StyleDefinition<P>)
   __scLogic?: LogicHandler<P>[]

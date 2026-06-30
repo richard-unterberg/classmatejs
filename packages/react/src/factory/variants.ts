@@ -35,13 +35,12 @@ const createVariantsComponent = <
 ): CmBaseComponent<MergeProps<E, ExtraProps & Partial<VariantProps>>> => {
   const { base, variants, defaultVariants = {} } = config
   const propsToFilter = Object.keys(variants)
-  const styles: Record<string, string | number> = {}
   const displayName = `Variants(${typeof tag === 'string' ? tag : 'Component'})`
   const logicHandlers = options.logic ?? []
 
   const computeClassName = (
     props: MergeProps<E, Partial<VariantProps> & ExtraProps>,
-    collectedStyles: Record<string, string | number>,
+    collectedStyles: StyleDefinition<MergeProps<E, Partial<VariantProps> & ExtraProps>> = {},
   ) => {
     const styleUtility = (styleDef: StyleDefinition<MergeProps<E, Partial<VariantProps> & ExtraProps>>) => {
       Object.assign(collectedStyles, styleDef)
@@ -68,9 +67,8 @@ const createVariantsComponent = <
 
   return createReactElement({
     tag,
-    computeClassName: (props) => computeClassName(props, styles),
+    computeClassName,
     displayName,
-    styles,
     propsToFilter,
     logicHandlers,
   }) as CmBaseComponent<MergeProps<E, Partial<VariantProps> & ExtraProps>>

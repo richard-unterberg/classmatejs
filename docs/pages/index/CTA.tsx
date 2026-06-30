@@ -9,7 +9,7 @@ const CTAButtons = (props: HTMLAttributes<HTMLDivElement>) => {
       {...props}
     >
       <Link
-        href={`/quick-start`}
+        href={`getting-started`}
         className="btn btn-primary sm:btn-lg"
         aria-label="Get started with telefunc by following the quick start guide"
       >

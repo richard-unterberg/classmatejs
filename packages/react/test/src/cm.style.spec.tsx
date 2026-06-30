@@ -79,4 +79,33 @@ describe('Style Capabilities', () => {
     expect(button).toHaveStyle('border: 1px solid blue')
     expect(button).toHaveStyle('font-size: 18px')
   })
+
+  it('does not leak variant styles between extended component instances', () => {
+    const Alert = cm.div.variants<{ $isActive?: boolean }>({
+      variants: {
+        $isActive: {
+          true: (p) => p.style({ border: '1px solid red' }),
+          false: 'inactive',
+        },
+      },
+      defaultVariants: {
+        $isActive: false,
+      },
+    })
+    const LocalAlert = cm.extend(Alert)`extended`
+
+    const { container } = render(
+      <>
+        <LocalAlert>Inactive first</LocalAlert>
+        <LocalAlert $isActive>Active</LocalAlert>
+        <LocalAlert>Inactive after active</LocalAlert>
+      </>,
+    )
+
+    const [inactiveFirst, active, inactiveAfterActive] = Array.from(container.children) as HTMLElement[]
+
+    expect(inactiveFirst).not.toHaveStyle('border: 1px solid red')
+    expect(active).toHaveStyle('border: 1px solid red')
+    expect(inactiveAfterActive).not.toHaveStyle('border: 1px solid red')
+  })
 })

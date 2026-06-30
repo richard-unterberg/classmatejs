@@ -1,7 +1,12 @@
 import cm from '@classmatejs/react'
 import { LayoutComponent } from '@unterberg/nivel'
+import CodePresenter from '../../components/CodePresenter'
 import ClassmateCode from './Compare/classmate.mdx'
+import CVACode from './Compare/cva.mdx'
+import NativeCode from './Compare/native.mdx'
 import CTAButtons from './CTA'
+
+import './startpage.css'
 
 interface AlertProps {
   $severity?: 'info' | 'warning' | 'error'
@@ -16,17 +21,13 @@ const Alert = cm.div.variants<AlertProps>({
   `,
   variants: {
     $severity: {
-      warning: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-600/50 dark:text-yellow-200',
-      info: 'bg-blue-100 text-blue-800 dark:bg-blue-600/50 dark:text-blue-200',
-      error: 'bg-red-100 text-red-800 dark:bg-red-600/50 dark:text-red-200',
+      warning: 'bg-warning/20 text-warning',
+      info: 'bg-info/20 text-info',
+      error: 'bg-error/20 text-error',
     },
     $isActive: {
-      true: ({ style }) =>
-        style({
-          border: '1px solid color-mix(in oklab, currentColor 18%, transparent)',
-          boxShadow: '0 14px 40px color-mix(in oklab, currentColor 18%, transparent)',
-        }),
-      false: 'border-gray-300 shadow-sm',
+      true: 'border border-current/50 shadow-xl shadow-current/20',
+      false: 'border border-current/20 border-dashed',
     },
   },
   defaultVariants: {
@@ -42,51 +43,83 @@ const Page = () => {
     <div className="landing-code-samples">
       <div
         data-beasties-container
-        className="overflow-x-clip min-h-[calc(100svh-14*var(--spacing))] flex flex-col justify-center py-16 w-full"
+        className="overflow-x-clip min-h-[calc(100svh-14*var(--spacing))] flex flex-col justify-center w-full"
       >
-        <div className="w-full overflow-x-hidden h-full max-w-full absolute top-0 left-0">
-          <div className="absolute top-0 min-w-300 left-1/2 w-full h-svh bg-radial-[at_50%_50%] from-primary-muted-light/30 dark:from-primary-muted-light/30 to-55% translate-x-[-50%] pointer-events-none" />
+        <div className="absolute top-0 left-0 right-0 h-[50svh] z-0 -translate-y-16">
+          <img src="/bg-dark.png" alt="" className="hidden dark:block absolute w-full h-full object-fill" />
+          <img src="/bg-light.png" alt="" className="dark:hidden absolute w-full h-full object-fill" />
         </div>
-
-        <LayoutComponent className="relative">
-          <div className="text-center mx-auto z-2 relative">
-            <div>
-              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl! font-bold tracking-tight">
-                @classmatejs
-              </h1>
-              <p className="font-normal text-base-muted text-lg md:text-2xl lg:text-3xl mt-4">
-                Styled components for class names. For React and SolidJS.
-              </p>
+        <div className="mt-24 mb-16">
+          <LayoutComponent className="relative">
+            <div className="text-center mx-auto z-2 relative">
+              <div>
+                <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight">@classmatejs</h1>
+                <p className="font-normal text-base-muted text-lg md:text-2xl lg:text-3xl mt-4">
+                  Styled components for class names. For React and SolidJS.
+                </p>
+              </div>
             </div>
-          </div>
+          </LayoutComponent>
+          <LayoutComponent $size="sm" className="flex gap-2 justify-center">
+            <CTAButtons />
+          </LayoutComponent>
+        </div>
+        <LayoutComponent className="mt-0">
+          <CodePresenter
+            leftCode={<NativeCode />}
+            leftCodeLabel="Native"
+            rightCode={<CVACode />}
+            rightCodeLabel="CVA"
+            highlightCode={<ClassmateCode />}
+            highlightCodeLabel="Classmate"
+            hightlightBoxHeight={660}
+            smallBoxHeight={560}
+          />
+        </LayoutComponent>
+        <LayoutComponent $size="lg" className="flex gap-2 justify-center mt-10">
+          <LocalAlert>
+            <code>{`<Alert />`}</code>
+          </LocalAlert>
+          <LocalAlert $isActive>
+            <code>{`<Alert $isActive />`}</code>
+          </LocalAlert>
+          <LocalAlert $severity="warning">
+            <code>{`<Alert $severity="warning" />`}</code>
+          </LocalAlert>
+          <LocalAlert $severity="warning" $isActive>
+            <code>{`<Alert $severity="warning" $isActive />`}</code>
+          </LocalAlert>
+          <LocalAlert $severity="error">
+            <code>{`<Alert $severity="error" />`}</code>
+          </LocalAlert>
+          <LocalAlert $severity="error" $isActive>
+            <code>{`<Alert $severity="error" $isActive />`}</code>
+          </LocalAlert>
         </LayoutComponent>
 
-        <LayoutComponent $size="lg" className="flex gap-2 justify-center">
+        <LayoutComponent $size="xs" className="">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-center">Explore Variants</h1>
+          <p>
+            Classmate is a utility-first library that allows you to create styled components with variants. It provides
+            a simple and intuitive API for defining and using variants in your components.
+          </p>
+        </LayoutComponent>
+
+        <LayoutComponent $size="full" className="mt-0">
+          <CodePresenter
+            leftCode={<NativeCode />}
+            leftCodeLabel="Native"
+            rightCode={<CVACode />}
+            rightCodeLabel="CVA"
+            highlightCode={<ClassmateCode />}
+            highlightCodeLabel="Classmate"
+            hightlightBoxHeight={660}
+            smallBoxHeight={560}
+          />
+        </LayoutComponent>
+
+        <LayoutComponent $size="lg" className="flex gap-2 justify-center mt-10">
           <CTAButtons />
-        </LayoutComponent>
-        <LayoutComponent>
-          <div className="hidden md:grid md:grid-cols-2 gap-4">
-            <h2 className="text-lg mb-2 text-center">The Pain</h2>
-            <h2 className="text-lg mb-2 text-center">The Aid</h2>
-            <div className="flex  gap-4 p-3 border border-dashed border-base-muted rounded-md">example follows</div>
-            <div className="flex  gap-4 p-3 border border-dashed border-base-muted rounded-md">
-              <LocalAlert>
-                <code>{`<Alert />`}</code>
-              </LocalAlert>
-              <LocalAlert $isActive>
-                <code>{`<Alert $isActive />`}</code>
-              </LocalAlert>
-              <LocalAlert $severity="warning" $isActive>
-                <code>{`<Alert  $severity="warning" $isActive />`}</code>
-              </LocalAlert>
-            </div>
-          </div>
-          <div className="landing-code-samples grid md:grid-cols-2 gap-4 md:items-stretch">
-            <span className="md:hidden text-lg text-center font-semibold">Call in the browser</span>
-            <ClassmateCode />
-            <span className="md:hidden text-lg text-center  font-semibold">Run on the server</span>
-            <ClassmateCode />
-          </div>
         </LayoutComponent>
       </div>
     </div>

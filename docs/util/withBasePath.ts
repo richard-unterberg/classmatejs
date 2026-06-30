@@ -5,7 +5,24 @@ export const normalizePathname = (value: string) => {
   return normalized === '' ? '/' : `${normalized}/`
 }
 
-export const withBasePath = (href: string, basePath: string) => {
+export const stripBasePath = (pathname: string, basePath: string) => {
+  const normalizedPathname = normalizePathname(pathname)
+  const normalizedBasePath = normalizePathname(basePath)
+
+  if (normalizedBasePath === '/') {
+    return normalizedPathname
+  }
+
+  if (normalizedPathname === normalizedBasePath) {
+    return '/'
+  }
+
+  return normalizedPathname.startsWith(normalizedBasePath)
+    ? `/${normalizedPathname.slice(normalizedBasePath.length)}`
+    : normalizedPathname
+}
+
+export const withDocsBasePath = (href: string, basePath: string) => {
   if (!href.startsWith('/') || href.startsWith('//')) {
     return href
   }

@@ -59,7 +59,7 @@ const normalizeInlineStyle = (style: Record<string, any> | undefined | null) => 
 
 interface CreateSolidElementParams<T extends object, E extends keyof JSX.IntrinsicElements | Component<any>> {
   tag: E
-  computeClassName: (props: T) => string
+  computeClassName: (props: T, collectedStyles?: StyleDefinition<T>) => string
   displayName: string
   styles?: StyleDefinition<T> | ((props: T) => StyleDefinition<T>)
   propsToFilter?: (keyof T)[]
@@ -123,7 +123,7 @@ const createSolidElement = <T extends object, E extends keyof JSX.IntrinsicEleme
       component: renderTag as any,
       ...filteredProps,
       get class() {
-        const computedClassName = computeClassName(normalizedProps)
+        const computedClassName = computeClassName(normalizedProps, {})
         const initialClass = typeof local.class === 'string' ? local.class : ''
         const incomingClasses = [initialClass, typeof local.className === 'string' ? local.className : '']
           .filter(Boolean)
@@ -133,11 +133,14 @@ const createSolidElement = <T extends object, E extends keyof JSX.IntrinsicEleme
         return twMerge(computedClassName, incomingClasses)
       },
       get style() {
+        const collectedStyles: StyleDefinition<T> = {}
+        computeClassName(normalizedProps, collectedStyles)
         const dynamicStylesSource = typeof styles === 'function' ? styles(normalizedProps) : styles
         const dynamicStyles = resolveStyleDefinition(dynamicStylesSource, normalizedProps)
+        const generatedStyles = resolveStyleDefinition(collectedStyles, normalizedProps)
         const localStyleSource = typeof local.style === 'object' && local.style !== null ? local.style : undefined
         const localStyles = normalizeInlineStyle(localStyleSource)
-        return { ...dynamicStyles, ...localStyles }
+        return { ...dynamicStyles, ...generatedStyles, ...localStyles }
       },
       get children() {
         return local.children
@@ -147,8 +150,8 @@ const createSolidElement = <T extends object, E extends keyof JSX.IntrinsicEleme
 
   element.displayName = displayName || 'Cm Component'
   element.__scClassmate = true
-  element.__scComputeClassName = (props: T) =>
-    computeClassName(logicHandlers.length > 0 ? applyLogicHandlers(props, logicHandlers) : props)
+  element.__scComputeClassName = (props: T, collectedStyles?: StyleDefinition<T>) =>
+    computeClassName(logicHandlers.length > 0 ? applyLogicHandlers(props, logicHandlers) : props, collectedStyles)
   element.__scStyles = styles
   element.__scTag = tag
   element.__scLogic = logicHandlers

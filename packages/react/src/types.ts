@@ -48,7 +48,7 @@ export interface CmBaseComponent<P extends object = object>
     props: PropsWithoutRef<TransformAsProps<P, K>> & RefAttributes<any>,
   ): ReactNode
   __rcClassmate: true
-  __rcComputeClassName?: (props: P) => string
+  __rcComputeClassName?: (props: P, collectedStyles?: StyleDefinition<P>) => string
   __rcTag?: keyof React.JSX.IntrinsicElements | JSXElementConstructor<any>
   __rcStyles?: StyleDefinition<P> | ((props: P) => StyleDefinition<P>)
   __rcLogic?: LogicHandler<P>[]

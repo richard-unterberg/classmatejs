@@ -22,12 +22,11 @@ const createBaseComponent = <T extends object, E extends keyof JSX.IntrinsicElem
   interpolations: Interpolation<T>[],
   options: CreateBaseComponentOptions<MergeProps<E, T>> = {},
 ): CmBaseComponent<MergeProps<E, T>> => {
-  const styles: Record<string, string | number> = {}
   const displayName = `Styled(${typeof tag === 'string' ? tag : 'Component'})`
   const logicHandlers = options.logic ?? []
   const resolveInterpolationValue = (value: unknown) => (typeof value === 'string' ? value : '')
 
-  const computeClassName = (props: MergeProps<E, T>, collectedStyles: Record<string, string | number>) => {
+  const computeClassName = (props: MergeProps<E, T>, collectedStyles: StyleDefinition<MergeProps<E, T>> = {}) => {
     const styleUtility = (styleDef: StyleDefinition<MergeProps<E, T>>) => {
       Object.assign(collectedStyles, styleDef)
       return ''
@@ -57,9 +56,8 @@ const createBaseComponent = <T extends object, E extends keyof JSX.IntrinsicElem
 
   return createSolidElement({
     tag,
-    computeClassName: (props) => computeClassName(props, styles),
+    computeClassName,
     displayName,
-    styles,
     logicHandlers,
   })
 }

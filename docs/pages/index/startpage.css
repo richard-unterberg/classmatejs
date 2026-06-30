@@ -2,8 +2,18 @@
   /* height: 100%; */
   /* margin-bottom: 0; */
   /* padding-top: 1rem; */
-  font-size: 12.5px;
+  font-size: calc(var(--spacing) * 3.5);
 }
+
+[data-is-startpage='true'] header {
+  background: none;
+}
+
+.landing-code-samples .small-text [data-choice-group-header] .select,
+.landing-code-samples .small-text [data-choice-group-header] button {
+  display: none;
+}
+
 /* 
 .landing-code-samples [data-rehype-pretty-code-figure] {
   height: 100%;
