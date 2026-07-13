@@ -1,3 +1,5 @@
 # classmatejs is deprecated
 
-use Marmo instead 👈 richard-unterberg.github.io/marmo
+use Marmo instead 👈 
+- Website: https://richard-unterberg.github.io/marmo
+- Github: https://github.com/richard-unterberg/marmo
